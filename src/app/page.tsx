@@ -5,13 +5,12 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ShieldCheck, Clock, TrendingUp, Zap, Lock,
-  CheckCircle2, ChevronDown, Phone, MessageCircle,
-  Users, DollarSign, Activity, Gift, PieChart
+  ChevronDown, MessageCircle,
+  Users, DollarSign, Activity, TrendingDown
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import {
-  PLANS, TELEGRAM_BOT_LINK, WHATSAPP_1, WHATSAPP_2,
-  YOUTUBE_CHANNEL, YOUTUBE_EMBED,
+  PLANS, TELEGRAM_BOT_LINK,
   SITE_NAME, SITE_SHORT
 } from "@/lib/constants";
 import Link from "next/link";
@@ -40,12 +39,12 @@ function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
     <div
-      className={`card overflow-hidden cursor-pointer transition-all ${open ? "border-yellow-400/20" : ""}`}
+      className={`card overflow-hidden cursor-pointer transition-all ${open ? "border-gold/30 bg-white/[0.04]" : "bg-white/[0.02] border-white/5"}`}
       onClick={() => setOpen(!open)}
     >
       <div className="flex items-center justify-between px-6 py-5 gap-4">
-        <p className="font-bold text-sm pr-4">{q}</p>
-        <ChevronDown className={`w-4 h-4 text-muted shrink-0 transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
+        <p className="font-bold text-sm pr-4 italic uppercase tracking-tight">{q}</p>
+        <ChevronDown className={`w-4 h-4 text-gold shrink-0 transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
       </div>
       <AnimatePresence>
         {open && (
@@ -56,7 +55,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            <p className="px-6 pb-5 text-muted text-sm leading-relaxed">{a}</p>
+            <p className="px-6 pb-6 text-muted text-sm leading-relaxed font-medium">{a}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -67,121 +66,81 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 // ─── Section Header ───────────────────────────────────────────────
 function SectionHeader({ label, title, sub }: { label: string; title: string; sub?: string }) {
   return (
-    <div className="text-center space-y-4 mb-16">
-      <div className="inline-block text-[9px] font-black uppercase tracking-[0.25em] text-gold border border-gold/20 bg-gold/5 px-4 py-1.5 rounded-full">
+    <div className="text-center space-y-4 mb-20">
+      <div className="inline-block text-[10px] font-black uppercase tracking-[0.4em] text-gold border border-gold/20 bg-gold/5 px-5 py-2 rounded-full italic">
         {label}
       </div>
-      <h2 className="text-3xl md:text-5xl font-black uppercase italic tracking-tighter">{title}</h2>
-      <div className="w-12 h-0.5 bg-gold mx-auto rounded-full" />
-      {sub && <p className="text-muted text-sm max-w-xl mx-auto">{sub}</p>}
+      <h2 className="text-4xl md:text-7xl font-black uppercase italic tracking-tighter leading-none">{title}</h2>
+      <div className="w-20 h-1 bg-gold mx-auto rounded-full mt-6" />
+      {sub && <p className="text-muted text-lg max-w-2xl mx-auto mt-8 leading-relaxed font-medium">{sub}</p>}
     </div>
   );
 }
 
-// ─── Games Section ────────────────────────────────────────────────
-function GamesSection() {
-  const games = [
-    {
-      id: 'reward-box',
-      name: '🎁 REWARD BOX',
-      desc: 'Abre cajas misteriosas y gana hasta x3 tu inversión.',
-      icon: Gift,
-      color: 'from-yellow-400/20 to-transparent',
-      shadow: 'shadow-yellow-400/10'
-    },
-    {
-      id: 'market-spin',
-      name: '🎯 MARKET SPIN',
-      desc: 'Elige un color y multiplica tu dinero al instante.',
-      icon: PieChart,
-      color: 'from-profit/20 to-transparent',
-      shadow: 'shadow-profit/10'
-    },
-    {
-      id: 'price-prediction',
-      name: '📈 PRICE PREDICTION',
-      desc: 'Predice si el mercado sube o baja y gana en segundos.',
-      icon: TrendingUp,
-      color: 'from-blue-500/20 to-transparent',
-      shadow: 'shadow-blue-500/10'
-    }
-  ];
+// ─── Live Activity ───────────────────────────────────────────────
+function LiveActivity() {
+  const [activities, setActivities] = useState([
+    { id: 1, type: 'DEPOSIT', user: 'User_***45', amount: 30, time: 'Hace 2 min' },
+    { id: 2, type: 'WITHDRAW', user: 'Admin_***22', amount: 15.5, time: 'Hace 5 min' },
+    { id: 3, type: 'DEPOSIT', user: 'Crypto_***99', amount: 100, time: 'Hace 12 min' },
+    { id: 4, type: 'WITHDRAW', user: 'Rich_***07', amount: 45, time: 'Hace 15 min' },
+  ]);
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setActivities(prev => [
+        { 
+          id: Date.now(), 
+          type: Math.random() > 0.4 ? 'DEPOSIT' : 'WITHDRAW', 
+          user: `User_***${Math.floor(Math.random() * 99)}`, 
+          amount: [30, 50, 100, 150, 200, 400][Math.floor(Math.random() * 6)], 
+          time: 'Justo ahora' 
+        },
+        ...prev.slice(0, 3)
+      ]);
+    }, 15000);
+    return () => clearInterval(t);
+  }, []);
 
   return (
-    <section id="juegos" className="py-32 border-t border-white/5 relative overflow-hidden">
-       {/* Background Glows */}
-       <div className="absolute top-0 left-1/4 w-96 h-96 bg-gold/5 blur-[120px] rounded-full pointer-events-none" />
-       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-profit/5 blur-[120px] rounded-full pointer-events-none" />
-
-       <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <SectionHeader 
-            label="Diversión y Ganancias" 
-            title="🎮 GANA MÁS CON NUESTROS JUEGOS" 
-            sub="Multiplica tu inversión en segundos con nuestros juegos interactivos en tiempo real." 
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-             {games.map((g, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  whileHover={{ y: -10, scale: 1.02 }}
-                  className={`card p-10 border-white/5 hover:border-gold/30 transition-all group relative overflow-hidden ${g.shadow}`}
-                >
-                   <div className={`absolute inset-0 bg-gradient-to-br ${g.color} opacity-0 group-hover:opacity-100 transition-opacity`} />
-                   
-                   <div className="relative z-10 space-y-6">
-                      <div className="w-16 h-16 rounded-3xl bg-white/5 flex items-center justify-center text-gold group-hover:scale-110 transition-transform shadow-inner">
-                         <g.icon className="w-8 h-8" />
-                      </div>
-                      <h3 className="text-xl font-black italic uppercase tracking-tighter">{g.name}</h3>
-                      <p className="text-muted text-sm leading-relaxed">{g.desc}</p>
-                      <Link 
-                        href={`/games/${g.id}`}
-                        className="inline-flex items-center gap-2 text-gold text-[10px] font-black uppercase tracking-[0.3em] group-hover:gap-4 transition-all"
-                      >
-                         👉 JUGAR AHORA
-                      </Link>
-                   </div>
-                </motion.div>
-             ))}
-          </div>
-
-          {/* Conversion Footer */}
-          <div className="flex flex-wrap justify-center items-center gap-10 py-10 border-t border-white/5">
-             <div className="flex items-center gap-3">
-                <span className="text-2xl">🔥</span>
-                <span className="text-sm font-black text-white italic uppercase tracking-tighter">+1,200 usuarios ganando ahora mismo</span>
-             </div>
-             <div className="flex items-center gap-3">
-                <span className="text-2xl">💰</span>
-                <span className="text-sm font-black text-white italic uppercase tracking-tighter">Retornos en tiempo real</span>
-             </div>
-             <div className="flex items-center gap-3">
-                <span className="text-2xl">⚡</span>
-                <span className="text-sm font-black text-white italic uppercase tracking-tighter">Resultados en segundos</span>
-             </div>
-          </div>
-       </div>
-    </section>
+     <div className="space-y-4">
+        <AnimatePresence mode="popLayout">
+           {activities.map((a) => (
+              <motion.div
+                key={a.id}
+                initial={{ opacity: 0, x: -30, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: 30, scale: 0.95 }}
+                className="flex items-center justify-between p-6 rounded-[2rem] bg-white/[0.03] border border-white/5 hover:bg-white/[0.05] transition-all group"
+              >
+                 <div className="flex items-center gap-5">
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${a.type === 'DEPOSIT' ? 'bg-profit/10 text-profit' : 'bg-gold/10 text-gold'}`}>
+                       {a.type === 'DEPOSIT' ? <TrendingUp className="w-6 h-6" /> : <TrendingDown className="w-6 h-6" />}
+                    </div>
+                    <div>
+                       <p className="font-black text-base uppercase tracking-tight">{a.user}</p>
+                       <p className="text-[10px] text-muted font-black uppercase tracking-widest italic">{a.time}</p>
+                    </div>
+                 </div>
+                 <div className="text-right">
+                    <p className={`font-black text-xl italic ${a.type === 'DEPOSIT' ? 'text-profit' : 'text-gold'}`}>
+                       {a.type === 'DEPOSIT' ? '+' : '-'}{a.amount} USDT
+                    </p>
+                    <p className="text-[9px] text-muted font-black tracking-[0.3em] uppercase">NETWORK VERIFIED</p>
+                 </div>
+              </motion.div>
+           ))}
+        </AnimatePresence>
+     </div>
   );
 }
 
-// ─── Main Page ────────────────────────────────────────────────────
+// ─── Main Content ────────────────────────────────────────────────
 export default function Home() {
   const { user } = useAuth();
   const router = useRouter();
 
-  // Fallback Data
-  const fallbackStats = {
-    users: 1247,
-    paid: 89510,
-    deposits: 346
-  };
-
+  const fallbackStats = { users: 1247, paid: 89510, deposits: 346 };
   const activeUsers  = useLiveCounter(fallbackStats.users, 3, 9000);
   const totalPaid    = useLiveCounter(fallbackStats.paid, 150, 7000);
   const todayDeposit = useLiveCounter(fallbackStats.deposits, 5, 11000);
@@ -190,349 +149,215 @@ export default function Home() {
     try {
       const params = new URLSearchParams(window.location.search);
       const user_id = params.get('user_id');
-
       if (user_id) {
         localStorage.setItem('user_id', user_id);
         router.push('/dashboard');
       } else if (user) {
         router.push("/dashboard");
       }
-    } catch (err) {
-      console.error("Error in auth redirect:", err);
-    }
+    } catch (err) { console.error(err); }
   }, [user, router]);
 
-  return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white selection:bg-gold selection:text-black overflow-x-hidden">
+  const SectionWrapper = ({ children, className = "", id = "" }: { children: React.ReactNode, className?: string, id?: string }) => (
+    <section id={id} className={className}>{children}</section>
+  );
 
-      {/* ════════════════════════ HERO ════════════════════════ */}
-      <section className="relative min-h-[90vh] flex items-center pt-32 pb-20">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-gold/5 blur-[120px] rounded-full" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-profit/5 blur-[120px] rounded-full" />
+  return (
+    <main className="min-h-screen bg-[#0a0a0a] text-white selection:bg-gold selection:text-black overflow-x-hidden antialiased">
+
+      {/* 1. HERO */}
+      <SectionWrapper className="relative min-h-screen flex items-center pt-32 pb-20 overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-gold/5 blur-[150px] rounded-full" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-profit/5 blur-[150px] rounded-full" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 w-full relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            {/* LEFT */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="space-y-8">
-              <div className="inline-flex items-center gap-2 bg-yellow-400/10 border border-yellow-400/20 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-gold">
-                <span className="w-1.5 h-1.5 rounded-full bg-profit animate-pulse" />
-                Sistema Activo · Verificación Blockchain
+        <div className="max-w-7xl mx-auto px-4 w-full relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="space-y-10">
+              <div className="inline-flex items-center gap-3 bg-white/5 border border-white/10 px-6 py-2.5 rounded-full text-[11px] font-black uppercase tracking-[0.4em] text-gold italic">
+                <span className="w-2.5 h-2.5 rounded-full bg-profit animate-pulse" />
+                SISTEMA OPERACIONAL 2026
               </div>
-
-              <h1 className="text-5xl md:text-7xl font-black uppercase italic leading-[0.9] tracking-tighter">
-                Invierte en USDT y genera{" "}
-                <span className="text-gold">ingresos automáticos</span>{" "}
-                con {SITE_SHORT}
+              <h1 className="text-6xl md:text-8xl font-black uppercase italic leading-[0.85] tracking-tighter">
+                Invierte USDT <br />
+                <span className="text-gold">Gana Capital</span> <br />
+                al Instante
               </h1>
-
-              <p className="text-lg text-muted leading-relaxed max-w-xl">
-                Plataforma automatizada de inversión con verificación blockchain en tiempo real y rendimientos garantizados cada 24 horas.
+              <p className="text-xl text-muted leading-relaxed max-w-xl font-medium">
+                La plataforma líder en crecimiento de USDT bajo red TRON (TRC20). Seguridad institucional y retornos automáticos cada 24 horas.
               </p>
-
-              <div className="flex flex-wrap gap-4 pt-4">
-                <Link 
-                  href="/login" 
-                  className="bg-gold hover:bg-yellow-300 text-black px-10 py-5 rounded-2xl text-lg font-black uppercase tracking-wider transition-all hover:scale-[1.05] active:scale-95 shadow-xl shadow-gold/20"
-                >
+              <div className="flex flex-col sm:flex-row gap-6 pt-4">
+                <Link href="/login" className="bg-gold hover:bg-yellow-300 text-black px-12 py-6 rounded-[2rem] text-xl font-black uppercase tracking-widest transition-all hover:scale-105 shadow-2xl shadow-gold/20 flex items-center justify-center">
                   EMPEZAR AHORA
                 </Link>
-                <a href="#planes" className="bg-white/5 hover:bg-white/10 border border-white/10 px-10 py-5 rounded-2xl text-lg font-black uppercase tracking-wider transition-all">
-                  VER PLANES →
+                <a href="#planes" className="bg-white/5 hover:bg-white/10 border border-white/10 px-12 py-6 rounded-[2rem] text-xl font-black uppercase tracking-widest transition-all flex items-center justify-center">
+                  VER PLANES
                 </a>
               </div>
             </motion.div>
 
-            {/* RIGHT — floating card */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="hidden lg:flex justify-end"
-            >
-              <div className="card glow-gold w-full max-w-md p-10 animate-float border-white/10 bg-white/[0.03] backdrop-blur-3xl rounded-[2.5rem]">
-                <div className="flex justify-between items-start mb-10">
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted mb-2">PLATAFORMA ACTIVA</p>
-                    <h3 className="text-3xl font-black uppercase italic tracking-tighter">{SITE_SHORT} CAPITAL</h3>
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }} className="hidden lg:flex justify-end">
+               <div className="card p-12 bg-white/[0.04] backdrop-blur-3xl rounded-[3.5rem] border-white/10 w-full max-w-sm relative">
+                  <div className="flex justify-between items-start mb-12">
+                     <p className="text-[10px] font-black italic text-muted uppercase tracking-[0.5em]">STATUS: SECURE</p>
+                     <TrendingUp className="w-10 h-10 text-gold" />
                   </div>
-                  <div className="w-12 h-12 bg-gold rounded-2xl flex items-center justify-center shadow-lg shadow-gold/20">
-                    <TrendingUp className="w-6 h-6 text-black" />
+                  <div className="space-y-12">
+                     <div>
+                        <p className="text-muted text-xs font-black uppercase tracking-widest mb-4">Daily Growth</p>
+                        <p className="text-7xl font-black italic tracking-tighter">+50%</p>
+                     </div>
+                     <div className="h-32 flex items-end gap-2 px-2">
+                        {[40, 70, 50, 90, 60, 110, 80, 130].map((h, i) => (
+                          <div key={i} className="flex-1 bg-gradient-to-t from-gold/10 to-gold rounded-t-xl" style={{ height: `${h}%`, opacity: 0.3 + (h / 130) * 0.7 }} />
+                        ))}
+                     </div>
                   </div>
-                </div>
-
-                <div className="space-y-8">
-                  <div>
-                    <p className="text-[10px] font-black text-muted uppercase tracking-widest mb-3">Rendimiento Estimado</p>
-                    <div className="flex items-baseline gap-3">
-                      <span className="text-5xl font-black tracking-tighter">USDT</span>
-                      <span className="text-profit text-4xl font-black">+50%</span>
-                      <span className="text-muted text-sm font-bold ml-auto">DAILY</span>
-                    </div>
-                  </div>
-
-                  {/* Bar Chart Representation */}
-                  <div className="h-24 flex items-end gap-1.5 px-2">
-                    {[35, 60, 45, 80, 55, 90, 70, 100, 82, 115, 95].map((h, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ height: 0 }}
-                        animate={{ height: `${h}%` }}
-                        transition={{ delay: 0.8 + i * 0.05, duration: 0.5 }}
-                        className="flex-1 rounded-t-lg bg-gradient-to-t from-gold/40 to-gold"
-                        style={{ opacity: 0.3 + (h / 115) * 0.7 }}
-                      />
-                    ))}
-                  </div>
-
-                  {/* Trusted Badges */}
-                  <div className="flex items-center justify-between pt-8 border-t border-white/10">
-                    <div className="flex items-center gap-2.5 text-profit text-[11px] font-black uppercase tracking-widest">
-                      <div className="w-2 h-2 rounded-full bg-profit animate-pulse" />
-                      OPERACIONAL
-                    </div>
-                    <div className="text-[10px] text-muted font-black uppercase tracking-[0.2em]">
-                      TRC20 · SECURE
-                    </div>
-                  </div>
-                </div>
-              </div>
+               </div>
             </motion.div>
           </div>
         </div>
-      </section>
+      </SectionWrapper>
 
-      {/* ════════════════════════ STATS (Standalone) ════════════════════════ */}
-      <section className="py-20 border-y border-white/5 bg-white/[0.01] relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+      {/* 2. STATS */}
+      <SectionWrapper className="py-24 border-y border-white/5 bg-white/[0.01]">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-16 text-center">
             {[
-              { icon: Users, label: "Usuarios Inviertiendo", val: activeUsers.toLocaleString(), color: "text-blue-400" },
-              { icon: DollarSign, label: "USDT Pagados a Miembros", val: `${totalPaid.toLocaleString()}`, color: "text-gold" },
-              { icon: Activity, label: "Operaciones Exitosas Hoy", val: todayDeposit.toLocaleString(), color: "text-profit" },
+              { icon: Users, label: "Inversores Activos", val: activeUsers.toLocaleString(), color: "text-blue-400" },
+              { icon: DollarSign, label: "USDT Pagados", val: totalPaid.toLocaleString(), color: "text-gold" },
+              { icon: Activity, label: "Operaciones Exitosas", val: todayDeposit.toLocaleString(), color: "text-profit" },
             ].map((s, i) => (
-              <motion.div 
-                key={i} 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="space-y-4"
-              >
-                <div className={`w-14 h-14 mx-auto rounded-3xl bg-white/5 flex items-center justify-center ${s.color}`}>
-                  <s.icon className="w-7 h-7" />
+              <div key={i} className="space-y-6">
+                <div className={`w-20 h-20 mx-auto rounded-[2rem] bg-white/5 flex items-center justify-center ${s.color} border border-white/5`}>
+                  <s.icon className="w-10 h-10" />
                 </div>
                 <div>
-                  <h4 className="text-4xl font-black tracking-tighter text-white mb-1 group-hover:scale-110 transition-transform">
-                    {s.val}
-                  </h4>
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted">{s.label}</p>
+                  <h4 className="text-5xl md:text-6xl font-black tracking-tighter leading-none mb-2">{s.val}</h4>
+                  <p className="text-[11px] font-black uppercase tracking-[0.5em] text-muted italic">{s.label}</p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
-      </section>
+      </SectionWrapper>
 
-      {/* ════════════════════════ PLANES ════════════════════════ */}
-      <section id="planes" className="py-32 relative">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold/5 blur-[150px] rounded-full pointer-events-none" />
-        
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <SectionHeader 
-            label="Inversión" 
-            title="🎯 PLANES DE ALTO RENDIMIENTO" 
-            sub="Capital de trabajo + ganancia garantizada procesada automáticamente en 24 horas." 
-          />
-
+      {/* 3. PLANES */}
+      <SectionWrapper id="planes" className="py-32 relative">
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+          <SectionHeader label="Inversión" title="🎯 ESTRUCTURA DE PLANES" sub="Cada plan está diseñado para maximizar tu capital en ciclos exactos de 24 horas." />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {PLANS.map((plan, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 32 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                whileHover={{ y: -10 }}
-                className={`card p-10 relative overflow-hidden flex flex-col justify-between group transition-all duration-500 rounded-[2.5rem] border-white/5 bg-white/[0.02] hover:bg-white/[0.04] ${
-                  plan.badge === "POPULAR" ? "border-gold/30 shadow-[0_0_50px_rgba(250,204,21,0.1)] scale-[1.02]" : ""
-                }`}
-              >
-                {/* Visual Flair */}
-                <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${plan.color} blur-[60px] opacity-20 transition-opacity group-hover:opacity-40`} />
-                
-                <div className="relative z-10">
-                  <div className="flex justify-between items-start mb-10">
-                    <p className="text-[11px] font-black uppercase tracking-[0.4em]" style={{ color: plan.accent }}>
-                      {plan.name}
-                    </p>
-                    {plan.badge && (
-                      <div className="px-3 py-1.5 text-[9px] font-black uppercase tracking-widest bg-gold text-black rounded-full leading-none animate-pulse-slow shadow-lg shadow-gold/20">
-                        {plan.badge}
-                      </div>
-                    )}
+            {(PLANS ?? []).map((plan, i) => (
+              <motion.div key={i} whileHover={{ y: -20 }} className="card p-12 bg-white/[0.03] border-white/5 rounded-[3rem] flex flex-col justify-between group transition-all">
+                <div>
+                  <div className="flex justify-between items-start mb-12">
+                    <p className="text-xs font-black uppercase tracking-[0.4em] italic" style={{ color: plan.accent }}>{plan.name}</p>
+                    {plan.badge && <span className="bg-gold text-black text-[10px] font-black px-4 py-2 rounded-xl italic">{plan.badge}</span>}
                   </div>
-
-                  <div className="mb-10">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-7xl font-black tracking-tighter text-white">
-                        ${plan.investment}
-                      </span>
-                      <span className="text-xl font-bold text-muted uppercase italic">usdt</span>
-                    </div>
-                    <div className="mt-4 flex flex-col gap-1">
-                      <p className="text-profit text-lg font-black italic uppercase tracking-tight">+{plan.profit} USDT GANANCIA</p>
-                      <p className="text-muted/60 text-xs font-bold tracking-widest uppercase">RECIBES EN TOTAL: ${plan.price}</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 mb-10 text-sm">
-                    {[
-                      ["ROI TOTAL", plan.roi],
-                      ["DURACIÓN", "24 HORAS"],
-                      ["RED NATIVA", "TRON (TRC20)"],
-                      ["PAGO", "AUTOMÁTICO"],
-                    ].map(([k, v], j) => (
-                      <div key={j} className="flex justify-between items-center py-3 border-t border-white/5">
-                        <span className="text-[10px] font-bold text-muted uppercase tracking-widest">{k}</span>
-                        <span className={`font-black tracking-tight ${k === "ROI TOTAL" ? "text-profit" : "text-white"}`}>{v}</span>
-                      </div>
-                    ))}
+                  <div className="mb-12">
+                    <p className="text-[10px] font-black text-muted uppercase tracking-[0.4em] mb-4">Capital</p>
+                    <p className="text-7xl font-black tracking-tighter italic">${plan.investment}</p>
+                    <p className="text-profit text-2xl font-black italic mt-4">+{plan.profit} USDT ROI</p>
                   </div>
                 </div>
-
-                <a 
-                  href={`${TELEGRAM_BOT_LINK}?start=plan_${plan.price}`} 
-                  target="_blank"
-                  className="relative z-10 w-full text-center bg-gold hover:bg-yellow-300 text-black py-5 rounded-2xl text-base font-black uppercase tracking-[0.2em] transition-all hover:shadow-[0_0_30px_rgba(250,204,21,0.3)]"
-                >
-                  INVERTIR YA
+                <a href={`${TELEGRAM_BOT_LINK}?start=plan_${plan.price}`} target="_blank" className="w-full bg-gold hover:bg-yellow-300 text-black py-6 rounded-2xl text-lg font-black uppercase tracking-widest transition-all shadow-xl shadow-gold/10 text-center">
+                  INVERTIR
                 </a>
               </motion.div>
             ))}
           </div>
         </div>
-      </section>
+      </SectionWrapper>
 
-      {/* ════════════════════════ CTA / GET STARTED ════════════════════════ */}
-      <section className="py-32 relative overflow-hidden">
-        <div className="max-w-5xl mx-auto px-6 relative z-10">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="card p-16 md:p-24 rounded-[3rem] bg-gradient-to-br from-gold/20 via-white/[0.02] to-profit/10 border-white/10 text-center space-y-10 relative overflow-hidden"
-          >
-             {/* Background Effects */}
-             <div className="absolute inset-0 bg-black/60 backdrop-blur-3xl -z-10" />
-             <div className="absolute top-0 right-0 w-64 h-64 bg-gold/10 blur-[100px] rounded-full" />
-             <div className="absolute bottom-0 left-0 w-64 h-64 bg-profit/10 blur-[100px] rounded-full" />
+      {/* 4. ACTIVITY */}
+      <SectionWrapper className="bg-white/[0.01] border-y border-white/5">
+         <div className="max-w-7xl mx-auto px-4 py-24 md:py-40">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+               <div className="space-y-12">
+                  <div>
+                    <span className="text-profit text-[11px] font-black uppercase tracking-[0.5em] italic bg-profit/10 px-4 py-2 rounded-lg">LIVE ACTIVITY</span>
+                    <h3 className="text-5xl md:text-7xl font-black italic uppercase tracking-tighter leading-none mt-8">PLATAFORMA EN <span className="text-profit">VIVO</span></h3>
+                    <p className="text-muted text-lg font-medium mt-8 leading-relaxed italic">Monitorea cada depósito y retiro procesado por nuestro nodo central en tiempo real.</p>
+                  </div>
+                  <LiveActivity />
+               </div>
+               <div className="space-y-12 bg-white/[0.02] p-12 rounded-[4rem] border border-white/5">
+                  {[
+                    { Icon: ShieldCheck, t: "Verificación Automática", d: "Validamos cada hash (TXID) directamente en TronScan para asegurar la operación." },
+                    { Icon: Clock, t: "Ciclos de 24 Horas", d: "Tu inversión se libera con ganancias exactamente 24 horas después de la activación." },
+                    { Icon: Zap, t: "Pagos Instantáneos", d: "Retiros habilitados de forma inmediata tras completar el ciclo de inversión." },
+                  ].map((f, i) => (
+                    <div key={i} className="flex gap-8 group">
+                       <div className="w-16 h-16 bg-white/5 rounded-3xl flex items-center justify-center text-gold group-hover:bg-gold/10 transition-all shrink-0"><f.Icon className="w-8 h-8" /></div>
+                       <div>
+                          <h4 className="text-xl font-black uppercase tracking-tight italic">{f.t}</h4>
+                          <p className="text-muted font-medium mt-2 leading-relaxed">{f.d}</p>
+                       </div>
+                    </div>
+                  ))}
+               </div>
+            </div>
+         </div>
+      </SectionWrapper>
 
-             <h2 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter leading-none">
-               ¿LISTO PARA TU PRIMERA <span className="text-gold">GANANCIA?</span>
-             </h2>
-             <p className="text-muted text-lg max-w-2xl mx-auto font-medium">
-               Únete a los miles de inversores que ya están generando USDT de forma pasiva y segura mediante nuestra infraestructura blockchain avanzada.
-             </p>
-             <div className="flex flex-col sm:flex-row justify-center gap-6 pt-6">
-                <Link href="/login" className="bg-gold hover:bg-yellow-300 text-black px-12 py-6 rounded-2xl text-xl font-black uppercase tracking-widest transition-all shadow-2xl shadow-gold/30">
-                  CREAR MI CUENTA
-                </Link>
-                <a 
-                  href={TELEGRAM_BOT_LINK} 
-                  target="_blank"
-                  className="bg-white/10 hover:bg-white/20 border border-white/20 px-12 py-6 rounded-2xl text-xl font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3"
-                >
-                  <MessageCircle className="w-6 h-6" /> SOPORTE
-                </a>
-             </div>
-          </motion.div>
-        </div>
-      </section>
+      {/* 5. CTA */}
+      <SectionWrapper className="py-24 md:py-40 relative">
+         <div className="max-w-5xl mx-auto px-4">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} className="card p-20 md:p-32 rounded-[4rem] bg-gradient-to-br from-white/[0.03] to-gold/5 border-white/10 text-center relative overflow-hidden group">
+               <div className="absolute inset-0 bg-black/40 backdrop-blur-3xl -z-10" />
+               <h2 className="text-5xl md:text-8xl font-black uppercase italic tracking-tighter leading-[0.85]">¿LISTO PARA TU <br /><span className="text-gold">PROGRESO?</span></h2>
+               <p className="text-muted text-xl max-w-xl mx-auto mt-12 italic font-medium">Únete a la mayor red de inversores USDT en 2026. Seguridad, rapidez y transparencia total.</p>
+               <div className="flex flex-col sm:flex-row justify-center gap-8 mt-16 pt-4">
+                  <Link href="/login" className="bg-gold hover:bg-yellow-300 text-black px-16 py-7 rounded-[2rem] text-2xl font-black uppercase tracking-widest transition-all shadow-2xl shadow-gold/30">CREAR CUENTA</Link>
+                  <a href={TELEGRAM_BOT_LINK} target="_blank" className="bg-white/5 hover:bg-white/10 border border-white/10 px-16 py-7 rounded-[2rem] text-2xl font-black uppercase tracking-widest transition-all flex items-center gap-4 justify-center"><MessageCircle className="w-8 h-8" /> SOPORTE</a>
+               </div>
+            </motion.div>
+         </div>
+      </SectionWrapper>
 
-      {/* ════════════════════════ EXTRA CONTENT SECTIONS ════════════════════════ */}
-      <GamesSection />
+      {/* 6. FAQ */}
+      <SectionWrapper className="py-24 border-t border-white/5">
+         <div className="max-w-4xl mx-auto px-4">
+            <SectionHeader label="Ayuda" title="Preguntas Frecuentes" />
+            <div className="space-y-6">
+              {FAQS.map((f, i) => <FAQItem key={i} q={f.q} a={f.a} />)}
+            </div>
+         </div>
+      </SectionWrapper>
 
-      <section id="como-funciona" className="py-32 border-t border-white/5 bg-white/[0.01]">
-        <div className="max-w-7xl mx-auto px-6">
-          <SectionHeader label="Proceso" title="¿Cómo Funciona?" sub="En 6 pasos simples, tu inversión estará activa y generando rendimientos." />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              { n: "01", icon: TrendingUp, title: "Elige tu Plan", desc: "Selecciona el monto que deseas invertir según nuestras opciones disponibles." },
-              { n: "02", icon: DollarSign, title: "Envía USDT", desc: "Transfiere a nuestra wallet oficial en la red TRON (TRC20) únicamente." },
-              { n: "03", icon: Activity, title: "Envía el TXID", desc: "El bot validará tu hash de transacción directamente en el explorador." },
-              { n: "04", icon: ShieldCheck, title: "Verificación", desc: "El sistema valida la Red, el Monto y el Destinatario automáticamente." },
-              { n: "05", icon: Zap, title: "Activación", desc: "Tu inversión se marca como ACTIVA al instante tras la confirmación." },
-              { n: "06", icon: Clock, title: "Recibe Pagos", desc: "En 24 horas tu balance se actualiza con el capital + la ganancia." },
-            ].map((s, i) => (
-              <div key={i} className="card p-10 space-y-6 group bg-white/[0.02] border-white/5 hover:border-gold/20 transition-all rounded-[2rem]">
-                 <div className="flex justify-between items-center text-gold">
-                    <s.icon className="w-10 h-10" />
-                    <span className="text-4xl font-black opacity-10">{s.n}</span>
-                 </div>
-                 <h3 className="text-xl font-black uppercase tracking-tight">{s.title}</h3>
-                 <p className="text-muted text-sm leading-relaxed">{s.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="faq" className="py-32 border-t border-white/5">
-        <div className="max-w-4xl mx-auto px-6">
-          <SectionHeader label="Soporte" title="Preguntas Frecuentes" sub="Resolvemos tus dudas sobre el sistema y los pagos." />
-          <div className="space-y-4">
-            {FAQS.map((faq, i) => (
-              <FAQItem key={i} q={faq.q} a={faq.a} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════════ FOOTER ════════════════════════ */}
-      <footer className="py-20 border-t border-white/5 bg-black relative">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-20">
-            <div className="space-y-6 max-w-sm">
-              <Link href="/" className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gold rounded-2xl flex items-center justify-center shadow-lg shadow-gold/20">
-                  <TrendingUp className="text-black w-6 h-6" />
+      {/* 7. FOOTER */}
+      <footer className="py-24 border-t border-white/10 bg-black">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 mb-24 items-center">
+            <div className="space-y-10">
+              <div className="flex items-center gap-5">
+                <div className="w-16 h-16 bg-gold rounded-[1.5rem] flex items-center justify-center shadow-2xl shadow-gold/20"><TrendingUp className="text-black w-8 h-8" /></div>
+                <div className="space-y-1">
+                   <h3 className="font-black text-4xl uppercase tracking-tighter leading-none">{SITE_NAME}</h3>
+                   <p className="text-[10px] text-muted font-black uppercase tracking-[0.6em] italic">Premium Capital Systems</p>
                 </div>
-                <span className="font-black text-2xl uppercase tracking-tighter">{SITE_NAME}</span>
-              </Link>
-              <p className="text-muted text-sm leading-relaxed">
-                La plataforma líder de inversión automatizada en USDT TRC20. Seguridad blockchain garantizada y rendimientos diarios estables.
-              </p>
+              </div>
+              <p className="text-muted text-lg font-medium leading-relaxed italic opacity-70 italic max-w-sm">Innovación blockchain aplicada al crecimiento financiero cotidiano.</p>
             </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-12">
-              <div className="space-y-4">
-                <h5 className="text-[10px] font-black uppercase tracking-[0.3em] text-white">Plataforma</h5>
-                <ul className="space-y-3 text-sm text-muted">
-                  <li><a href="#planes" className="hover:text-gold transition-colors">Planes</a></li>
-                  <li><a href="#como-funciona" className="hover:text-gold transition-colors">Proceso</a></li>
-                  <li><a href="#juegos" className="hover:text-gold transition-colors">Juegos</a></li>
-                </ul>
-              </div>
-              <div className="space-y-4">
-                <h5 className="text-[10px] font-black uppercase tracking-[0.3em] text-white">Soporte</h5>
-                <ul className="space-y-3 text-sm text-muted">
-                  <li><a href="/login" className="hover:text-gold transition-colors">Dashboard</a></li>
-                  <li><a href="/reglas" className="hover:text-gold transition-colors">Reglas</a></li>
-                  <li><a href={TELEGRAM_BOT_LINK} className="hover:text-gold transition-colors">Telegram</a></li>
-                </ul>
-              </div>
+            <div className="grid grid-cols-2 gap-16">
+               <div className="space-y-10 font-black italic uppercase tracking-widest">
+                  <h5 className="text-[11px] text-white border-l-2 border-gold pl-4 italic">ACCESOS</h5>
+                  <ul className="space-y-4 text-sm text-muted">
+                    <li><a href="#planes" className="hover:text-gold">PLANES</a></li>
+                    <li><a href="/login" className="hover:text-gold">DASHBOARD</a></li>
+                    <li><a href="/reglas" className="hover:text-gold">REGLAS</a></li>
+                  </ul>
+               </div>
+               <div className="space-y-10 font-black italic uppercase tracking-widest text-right">
+                  <p className="text-[10px] text-profit italic">SISTEMA ONLINE</p>
+                  <p className="text-white text-base">TRC20 NATIVE</p>
+                  <p className="text-muted text-[10px]">VERIFIED 2026</p>
+               </div>
             </div>
           </div>
-
-          <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted">
-              © 2026 {SITE_NAME}. Todos los derechos reservados.
-            </p>
-            <div className="flex items-center gap-8">
-               <span className="text-[10px] font-black uppercase tracking-widest text-profit">Red TRC20 Only</span>
-               <span className="text-[10px] font-black uppercase tracking-widest text-gold italic">Alpha Verified</span>
-            </div>
+          <div className="pt-16 border-t border-white/10 text-center">
+             <p className="text-[11px] font-black uppercase tracking-[0.5em] text-muted italic">© 2026 {SITE_NAME} · INFRAESTRUCTURA USDT TRC20</p>
           </div>
         </div>
       </footer>
