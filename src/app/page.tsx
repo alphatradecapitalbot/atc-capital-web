@@ -126,115 +126,140 @@ export default function Home() {
     } catch (err) { console.error(err); }
   }, [user, router]);
 
+  console.log("HOMEPAGE RENDERING - PREMIUM UI ACTIVE");
+
   return (
-    <main className="bg-black text-white min-h-screen selection:bg-yellow-500 selection:text-black antialiased">
-      
-      {/* GLOBAL BACKGROUND DEPTH */}
-      <div className="fixed inset-0 pointer-events-none -z-10 bg-gradient-to-b from-black via-[#050505] to-black">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-yellow-500 blur-[150px] opacity-10 rounded-full" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-yellow-500 blur-[150px] opacity-10 rounded-full" />
-      </div>
-
-      <div className="relative">
+    <main className="min-h-screen bg-black overflow-x-hidden selection:bg-yellow-400 selection:text-black">
+      <div className="relative pt-20">
         
-        {/* 1. HERO SECTION (FULL SCREEN) */}
-        <section className="min-h-screen flex flex-col justify-center max-w-7xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="max-w-3xl space-y-6">
-            <div className="inline-block px-4 py-1.5 bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 text-[10px] font-bold uppercase tracking-widest rounded-full">
-              Powered by Tron Network (TRC20)
-            </div>
-            <h1 className="text-5xl md:text-6xl font-bold leading-tight tracking-tight">
-              Invierte USDT y Gana <span className="text-yellow-400">Capital</span> en 24 Horas
-            </h1>
-            <p className="text-gray-400 text-lg md:text-xl leading-relaxed max-w-2xl">
-              La plataforma de inversión automatizada más segura y transparente. 
-              Verificación directa en blockchain con retornos garantizados.
-            </p>
-            <div className="flex gap-4 mt-6">
-              <Link href="/login" className="bg-yellow-400 hover:bg-yellow-300 text-black px-10 py-4 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg shadow-yellow-500/20">
-                EMPEZAR AHORA
-              </Link>
-              <a href="#planes" className="bg-white/5 hover:bg-white/10 border border-white/10 px-10 py-4 rounded-xl font-bold transition-all">
-                VER PLANES
-              </a>
-            </div>
-          </motion.div>
+        {/* HERO SECTION */}
+        <section className="min-h-screen flex flex-col justify-center max-w-7xl mx-auto px-6 relative z-10">
+          <div className="space-y-8 max-w-4xl">
+             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+               <span className="text-yellow-400 font-black uppercase tracking-[0.3em] text-xs mb-4 block animate-pulse">AlphaTrade Capital · 2026</span>
+               <h1 className="text-6xl md:text-8xl font-black text-white leading-none tracking-tighter">
+                 INVIERTE <br />
+                 <span className="text-yellow-400 italic">USDT</span> & GANA
+               </h1>
+               <p className="text-gray-400 text-lg md:text-xl mt-8 max-w-2xl leading-relaxed">
+                 Genera rendimientos automáticos en la red TRC20 con ciclos de 24 horas. 
+                 Seguridad total, transparencia absoluta y retiros instantáneos.
+               </p>
+               
+               <div className="flex flex-wrap gap-4 mt-10">
+                 <Link href="/login" className="px-10 py-5 bg-yellow-400 hover:bg-yellow-300 text-black font-black uppercase text-sm rounded-2xl shadow-2xl shadow-yellow-400/20 transition-all hover:scale-105">
+                   EMPEZAR AHORA
+                 </Link>
+                 <a href="#planes" className="px-10 py-5 bg-white/5 hover:bg-white/10 text-white font-black uppercase text-sm rounded-2xl border border-white/10 backdrop-blur-xl transition-all">
+                   VER PLANES
+                 </a>
+               </div>
+             </motion.div>
 
-          {/* 2. STATS SECTION (CARD) */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="grid grid-cols-3 gap-6 mt-12 bg-[#111] p-6 rounded-2xl border border-yellow-500/10">
-            <div className="flex flex-col items-center justify-center">
-              <span className="text-2xl md:text-3xl font-bold text-yellow-400">{(activeUsers || fallbackStats.users).toLocaleString()}</span>
-              <span className="text-[10px] md:text-sm text-gray-400 uppercase font-bold text-center">Usuarios Activos</span>
-            </div>
-            <div className="flex flex-col items-center justify-center border-x border-white/5">
-              <span className="text-2xl md:text-3xl font-bold text-yellow-400">${(totalPaid || fallbackStats.paid).toLocaleString()}</span>
-              <span className="text-[10px] md:text-sm text-gray-400 uppercase font-bold text-center">USDT Pagados</span>
-            </div>
-            <div className="flex flex-col items-center justify-center">
-              <span className="text-2xl md:text-3xl font-bold text-yellow-400">{(todayDeposit || fallbackStats.deposits).toLocaleString()}</span>
-              <span className="text-[10px] md:text-sm text-gray-400 uppercase font-bold text-center">Operaciones Hoy</span>
-            </div>
-          </motion.div>
+             {/* STATS SECTION (PREMIUM CARDS) */}
+             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 mt-20 p-8 bg-[#111]/80 backdrop-blur-2xl rounded-[32px] border border-yellow-500/10">
+               {[
+                 { l: "USUARIOS ACTIVOS", v: activeUsers.toLocaleString(), s: "Real-time" },
+                 { l: "USDT PAGADOS", v: totalPaid.toLocaleString(), s: "+$50/min" },
+                 { l: "DEPÓSITOS HOY", v: todayDeposit.toLocaleString(), s: "TRC20 Native" }
+               ].map((s, i) => (
+                 <div key={i} className="space-y-1">
+                   <p className="text-[10px] font-black text-yellow-400/50 tracking-widest">{s.l}</p>
+                   <p className="text-3xl font-black text-white tracking-tighter">{s.v}</p>
+                   <p className="text-[10px] font-bold text-green-500 flex items-center gap-1">
+                     <Activity size={10} /> {s.s}
+                   </p>
+                 </div>
+               ))}
+             </motion.div>
+          </div>
         </section>
 
-        {/* 3. PLANS SECTION (CARDS) */}
-        <section id="planes" className="py-20 max-w-7xl mx-auto px-6">
-          <h2 className="text-3xl font-bold mb-10 text-white">
-            Planes de inversión
-          </h2>
+        {/* 3. PLANS SECTION (PREMIUM CARDS) */}
+        <section id="planes" className="py-32 max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+            <div>
+              <span className="text-yellow-400 font-bold uppercase tracking-[0.2em] text-[10px]">Oportunidades</span>
+              <h2 className="text-4xl md:text-6xl font-black text-white mt-2 tracking-tighter">PLANES DE INVERSIÓN</h2>
+            </div>
+            <p className="text-gray-500 max-w-xs text-sm font-bold uppercase tracking-widest leading-relaxed">Ciclos automáticos de 24 horas garantizados por smart-contract backend.</p>
+          </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-8">
             {(PLANS || []).map((plan) => (
               <div
                 key={plan.name}
-                className="bg-[#111] p-6 rounded-2xl border border-yellow-500/10 hover:border-yellow-400 transition hover:scale-105 flex flex-col justify-between"
+                className="group relative bg-[#111] p-8 rounded-[32px] border border-yellow-500/10 hover:border-yellow-400 transition-all duration-500 hover:-translate-y-2 flex flex-col justify-between overflow-hidden"
               >
-                <div>
-                  <h3 className="text-xl font-bold text-yellow-400">
-                    {plan.name}
-                  </h3>
-                  <p className="text-gray-400 mt-2">
-                    ROI: {plan.roi}
-                  </p>
-                  <p className="text-white text-3xl font-bold mt-4">
-                    ${plan.investment}
-                  </p>
-                  <p className="text-green-500 text-sm font-bold mt-1">
-                    +{plan.profit} USDT ROI
-                  </p>
+                {/* Decorative gradient */}
+                <div className="absolute -top-24 -right-24 w-48 h-48 bg-yellow-400/5 blur-[100px] group-hover:bg-yellow-400/10 transition-colors" />
+                
+                <div className="relative z-10">
+                  <div className="flex justify-between items-start mb-8">
+                    <h3 className="text-2xl font-black text-yellow-400 uppercase tracking-tighter italic">
+                      {plan.name}
+                    </h3>
+                    <div className="px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full">
+                      <span className="text-[10px] font-black text-yellow-400">ACTIVE</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1 mb-8">
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Retorno 24h</p>
+                    <p className="text-5xl font-black text-white tracking-tighter italic">
+                      {plan.roi}
+                    </p>
+                  </div>
+
+                  <div className="p-6 bg-black/50 rounded-2xl border border-white/5 space-y-4">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-gray-500 font-bold uppercase">Inversión</span>
+                      <span className="text-white font-black">${plan.investment} USDT</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-gray-500 font-bold uppercase">Ganancia Neta</span>
+                      <span className="text-green-500 font-black">+{plan.profit} USDT</span>
+                    </div>
+                  </div>
                 </div>
-                <a href={`${TELEGRAM_BOT_LINK}?start=plan_${plan.price}`} className="mt-6 w-full bg-yellow-400 text-black py-2 rounded-lg font-bold hover:bg-yellow-300 transition text-center">
-                  Invertir
+
+                <a 
+                  href={`${TELEGRAM_BOT_LINK}?start=plan_${plan.price}`} 
+                  className="relative z-10 mt-10 w-full bg-white text-black py-4 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-yellow-400 transition-all text-center shadow-xl shadow-white/5 group-hover:shadow-yellow-400/20"
+                >
+                  Activar Plan
                 </a>
               </div>
             ))}
           </div>
         </section>
 
-        {/* 4. ACTIVITY SECTION (CARDS) */}
-        <section className="py-20 max-w-7xl mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
+        {/* 4. ACTIVITY SECTION (PREMIUM) */}
+        <section className="py-32 max-w-7xl mx-auto px-6 border-t border-white/5">
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
+            <div className="space-y-12">
               <div>
-                <span className="text-yellow-400 text-xs font-bold uppercase tracking-widest">Plataforma</span>
-                <h2 className="text-4xl font-bold mt-4 text-white">Actividad en Vivo</h2>
-                <p className="text-gray-400 text-lg mt-4 leading-relaxed">
-                  Monitorea las operaciones en tiempo real de nuestra plataforma. Transparencia total en cada ciclo de inversión.
+                <span className="text-yellow-400 font-bold uppercase tracking-[0.2em] text-[10px]">Ecosistema</span>
+                <h2 className="text-4xl md:text-6xl font-black text-white mt-4 tracking-tighter italic">LIVE FEED</h2>
+                <p className="text-gray-400 text-lg mt-6 leading-relaxed">
+                  Transparencia total en cada ciclo. Monitorea las operaciones en tiempo real procesadas por nuestra infraestructura USDT.
                 </p>
               </div>
               <LiveActivity />
             </div>
             <div className="grid gap-6">
               {[
-                { i: ShieldCheck, t: "Transacciones Seguras", d: "Cada hash de transacción es validado contra la blockchain oficial de TRON." },
-                { i: Clock, t: "Ciclos Precisos", d: "Nuestro sistema procesa pagos exactamente 24 horas después de la activación." },
-                { i: Zap, t: "Activación Instantánea", d: "Nada más enviar tu TXID, el capital empieza a trabajar para ti." }
+                { i: ShieldCheck, t: "Seguridad Blockchain", d: "Cada transacción es verificada mediante el hash oficial en la red TRON." },
+                { i: Clock, t: "Pagos Automáticos", d: "El sistema liquida tus ganancias exactamente 24 horas tras la activación." },
+                { i: Zap, t: "Fricción Cero", d: "Envía tu TXID y el sistema activa tu capital de forma inmediata." }
               ].map((f, i) => (
-                <div key={i} className="flex gap-6 p-6 bg-[#111] border border-yellow-500/10 rounded-2xl hover:border-yellow-400 transition-all group">
-                   <f.i className="w-10 h-10 text-yellow-400" />
+                <div key={i} className="flex gap-8 p-8 bg-[#111] border border-white/5 rounded-[32px] hover:border-yellow-400 transition-all group">
+                   <div className="p-4 bg-white/5 rounded-2xl group-hover:bg-yellow-400 group-hover:text-black transition-colors">
+                     <f.i className="w-8 h-8" />
+                   </div>
                    <div>
-                      <h4 className="text-lg font-bold text-white">{f.t}</h4>
-                      <p className="text-gray-400 text-sm mt-1">{f.d}</p>
+                      <h4 className="text-xl font-bold text-white uppercase italic tracking-tight">{f.t}</h4>
+                      <p className="text-gray-500 text-sm mt-2 leading-relaxed">{f.d}</p>
                    </div>
                 </div>
               ))}
@@ -242,65 +267,84 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 5. CTA SECTION (CARDS) */}
+        {/* 5. CTA SECTION (ULTRA PREMIUM) */}
         <section className="py-20 max-w-7xl mx-auto px-6">
-          <div className="bg-[#111] p-12 md:p-20 rounded-2xl border border-yellow-500/10 text-center relative overflow-hidden">
-             <h2 className="text-4xl md:text-5xl font-bold leading-tight uppercase italic text-white flex flex-col md:flex-row justify-center gap-2">
-                ¿LISTO PARA TU <span className="text-yellow-400">PROGRESO?</span>
-             </h2>
-             <p className="text-gray-400 text-lg mt-6 max-w-xl mx-auto">Únete ahora a la mayor red de inversores USDT. Seguridad, rapidez y transparencia total.</p>
-             <div className="flex flex-col sm:flex-row justify-center gap-4 mt-10">
-                <Link href="/login" className="px-12 py-4 bg-yellow-400 hover:bg-yellow-300 text-black font-bold uppercase rounded-xl shadow-lg shadow-yellow-500/20 transition-all hover:scale-105">CREAR CUENTA</Link>
-                <a href={TELEGRAM_BOT_LINK} target="_blank" className="px-12 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold uppercase rounded-xl transition-all flex items-center justify-center gap-2">
-                   <MessageCircle size={20} /> SOPORTE
-                </a>
+          <div className="bg-yellow-400 p-12 md:p-24 rounded-[48px] text-center relative overflow-hidden group">
+             {/* Decorative patterns */}
+             <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-black via-transparent to-transparent" />
+             
+             <div className="relative z-10">
+               <h2 className="text-5xl md:text-8xl font-black leading-none italic text-black tracking-tighter">
+                ¿LISTO PARA <br />
+                EL PROGRESO?
+               </h2>
+               <p className="text-black/60 text-lg md:text-xl mt-8 max-w-xl mx-auto font-bold uppercase tracking-tight">Únete ahora a la mayor red de inversores USDT. Seguridad, rapidez y transparencia total.</p>
+               <div className="flex flex-col sm:flex-row justify-center gap-6 mt-12">
+                  <Link href="/login" className="px-14 py-6 bg-black text-white font-black uppercase text-sm rounded-2xl shadow-2xl transition-all hover:scale-105">CREAR CUENTA</Link>
+                  <a href={TELEGRAM_BOT_LINK} target="_blank" className="px-14 py-6 bg-white/20 hover:bg-white/30 backdrop-blur-md text-black font-black uppercase text-sm rounded-2xl transition-all flex items-center justify-center gap-3">
+                     <MessageCircle size={20} /> SOPORTE 24/7
+                  </a>
+               </div>
              </div>
           </div>
         </section>
 
-        {/* FAQ SECTION (CARDS) */}
-        <section className="py-20 max-w-4xl mx-auto px-6">
-           <h2 className="text-3xl font-bold mb-10 text-center text-white">Preguntas Frecuentes</h2>
-           {FAQS.map((f, i) => <FAQItem key={i} q={f.q} a={f.a} />)}
+        {/* FAQ SECTION */}
+        <section className="py-32 max-w-4xl mx-auto px-6">
+           <div className="text-center mb-16">
+             <span className="text-yellow-400 font-bold uppercase tracking-[0.2em] text-[10px]">Centro de Ayuda</span>
+             <h2 className="text-4xl font-black text-white mt-4 italic tracking-tighter">PREGUNTAS FRECUENTES</h2>
+           </div>
+           <div className="space-y-4">
+            {FAQS.map((f, i) => <FAQItem key={i} q={f.q} a={f.a} />)}
+           </div>
         </section>
 
-        {/* 6. FOOTER */}
-        <footer className="py-20 border-t border-yellow-500/10">
-          <div className="max-w-7xl mx-auto px-6 grid gap-16 md:grid-cols-2">
-            <div className="space-y-6">
-              <Link href="/" className="flex items-center gap-3">
-                 <TrendingUp size={28} className="text-yellow-400" />
-                 <span className="font-bold text-2xl tracking-tighter uppercase text-white">{SITE_NAME}</span>
+        {/* 6. FOOTER (PREMIUM) */}
+        <footer className="py-32 border-t border-white/5 bg-[#050505]">
+          <div className="max-w-7xl mx-auto px-6 grid gap-20 md:grid-cols-2">
+            <div className="space-y-10">
+              <Link href="/" className="flex items-center gap-4 group">
+                 <div className="p-2 bg-yellow-400 rounded-xl group-hover:rotate-12 transition-transform">
+                   <TrendingUp size={32} className="text-black" />
+                 </div>
+                 <span className="font-black text-3xl tracking-tighter uppercase text-white">{SITE_NAME}</span>
               </Link>
-              <p className="text-gray-400 max-w-sm text-sm leading-relaxed">Innovación financiera aplicada al crecimiento de capital diario.</p>
+              <p className="text-gray-500 max-w-sm text-lg font-medium leading-relaxed italic">Innovación financiera aplicada al crecimiento de capital mediante protocolos TRC20.</p>
               <div className="flex gap-4">
-                 <div className="w-10 h-10 bg-[#111] rounded-xl flex items-center justify-center text-yellow-400 border border-yellow-500/10"><Zap size={20} /></div>
-                 <div className="w-10 h-10 bg-[#111] rounded-xl flex items-center justify-center text-yellow-400 border border-yellow-500/10"><ShieldCheck size={20} /></div>
-                 <div className="w-10 h-10 bg-[#111] rounded-xl flex items-center justify-center text-yellow-400 border border-yellow-500/10"><Lock size={20} /></div>
+                 {[Zap, ShieldCheck, Lock].map((Icon, i) => (
+                   <div key={i} className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-yellow-400 border border-white/10 hover:border-yellow-400 transition-colors">
+                     <Icon size={24} />
+                   </div>
+                 ))}
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-8 text-sm uppercase font-bold">
-               <div className="space-y-4">
-                  <h5 className="text-gray-500 text-[10px] tracking-widest">Plataforma</h5>
-                  <ul className="space-y-3">
-                    <li><a href="#planes" className="text-gray-400 hover:text-yellow-400 transition-all">Planes</a></li>
-                    <li><a href="/login" className="text-gray-400 hover:text-yellow-400 transition-all">Dashboard</a></li>
+            <div className="grid grid-cols-2 gap-12">
+               <div className="space-y-6">
+                  <h5 className="text-white text-xs font-black tracking-widest uppercase">Plataforma</h5>
+                  <ul className="space-y-4">
+                    <li><a href="#planes" className="text-gray-500 hover:text-yellow-400 font-bold uppercase text-[10px] tracking-widest transition-all">Planes Activos</a></li>
+                    <li><a href="/login" className="text-gray-500 hover:text-yellow-400 font-bold uppercase text-[10px] tracking-widest transition-all">Dashboard</a></li>
                   </ul>
                </div>
-               <div className="space-y-4 text-right">
-                  <h5 className="text-gray-500 text-[10px] tracking-widest">Sistema</h5>
-                  <div className="flex flex-col gap-1">
-                     <span className="text-green-500">Online Now</span>
-                     <span className="text-gray-400">TRC20 Native</span>
+               <div className="space-y-6 text-right">
+                  <h5 className="text-white text-xs font-black tracking-widest uppercase">Estatus</h5>
+                  <div className="flex flex-col gap-2">
+                     <span className="text-green-500 font-black text-[10px] uppercase tracking-widest flex items-center justify-end gap-2">
+                       <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                       Network Online
+                     </span>
+                     <span className="text-gray-500 font-bold text-[10px] uppercase tracking-widest">TRC20 Native Infrastructure</span>
                   </div>
                </div>
             </div>
           </div>
-          <div className="mt-16 pt-8 border-t border-white/5 text-center text-[10px] text-gray-600 uppercase font-bold tracking-widest">
-             © 2026 {SITE_NAME} · INFRAESTRUCTURA USDT TRC20
+          <div className="mt-32 pt-12 border-t border-white/5 text-center">
+             <p className="text-[10px] text-gray-700 font-black uppercase tracking-[0.5em]">
+               © 2026 {SITE_NAME} · PROTOCOLOS BLOCKCHAIN USDT
+             </p>
           </div>
         </footer>
-
       </div>
     </main>
   );
