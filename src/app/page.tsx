@@ -174,213 +174,176 @@ function GamesSection() {
 export default function Home() {
   const { user } = useAuth();
   const router = useRouter();
-  const activeUsers  = useLiveCounter(1247, 3, 9000);
-  const totalPaid    = useLiveCounter(89420, 150, 7000);
-  const todayDeposit = useLiveCounter(342, 5, 11000);
+
+  // Fallback Data
+  const fallbackStats = {
+    users: 1247,
+    paid: 89510,
+    deposits: 346
+  };
+
+  const activeUsers  = useLiveCounter(fallbackStats.users, 3, 9000);
+  const totalPaid    = useLiveCounter(fallbackStats.paid, 150, 7000);
+  const todayDeposit = useLiveCounter(fallbackStats.deposits, 5, 11000);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const user_id = params.get('user_id')
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const user_id = params.get('user_id');
 
-    if (user_id) {
-      localStorage.setItem('user_id', user_id)
-      router.push('/dashboard')
-    } else if (user) {
-      router.push("/dashboard");
+      if (user_id) {
+        localStorage.setItem('user_id', user_id);
+        router.push('/dashboard');
+      } else if (user) {
+        router.push("/dashboard");
+      }
+    } catch (err) {
+      console.error("Error in auth redirect:", err);
     }
   }, [user, router]);
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-[#0a0a0a] text-white selection:bg-gold selection:text-black overflow-x-hidden">
 
       {/* ════════════════════════ HERO ════════════════════════ */}
-      <section className="max-w-7xl mx-auto px-6 min-h-screen flex items-center pt-28 pb-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center w-full">
+      <section className="relative min-h-[90vh] flex items-center pt-32 pb-20">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-gold/5 blur-[120px] rounded-full" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-profit/5 blur-[120px] rounded-full" />
+        </div>
 
-          {/* LEFT */}
-          <motion.div initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }} className="space-y-8">
-            <div className="inline-flex items-center gap-2 bg-yellow-400/10 border border-yellow-400/20 px-4 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-[0.2em] text-gold">
-              <span className="w-1.5 h-1.5 rounded-full bg-profit animate-pulse-slow" />
-              Sistema Activo · Verificación Blockchain
-            </div>
+        <div className="max-w-7xl mx-auto px-6 w-full relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            {/* LEFT */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="space-y-8">
+              <div className="inline-flex items-center gap-2 bg-yellow-400/10 border border-yellow-400/20 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-gold">
+                <span className="w-1.5 h-1.5 rounded-full bg-profit animate-pulse" />
+                Sistema Activo · Verificación Blockchain
+              </div>
 
-            <h1 className="text-5xl md:text-6xl font-extrabold uppercase italic leading-tight tracking-tighter">
-              Invierte en USDT y genera{" "}
-              <span className="text-gold">ingresos automáticos</span>{" "}
-              con {SITE_SHORT}
-            </h1>
+              <h1 className="text-5xl md:text-7xl font-black uppercase italic leading-[0.9] tracking-tighter">
+                Invierte en USDT y genera{" "}
+                <span className="text-gold">ingresos automáticos</span>{" "}
+                con {SITE_SHORT}
+              </h1>
 
-            <p className="text-lg text-gray-300 leading-relaxed max-w-md">
-              Plataforma automatizada con verificación blockchain real y rendimientos diarios. Sin complicaciones, sin demoras.
-            </p>
+              <p className="text-lg text-muted leading-relaxed max-w-xl">
+                Plataforma automatizada de inversión con verificación blockchain en tiempo real y rendimientos garantizados cada 24 horas.
+              </p>
 
-            <div id="login" className="flex flex-col sm:flex-row gap-4 items-start">
-              <Link 
-                href="/login" 
-                className="btn-gold px-8 py-4 text-lg font-bold"
-              >
-                Login
-              </Link>
-              <a href="#planes" className="btn-ghost px-8 py-4 text-lg font-bold border border-white/10">Ver Planes →</a>
-            </div>
+              <div className="flex flex-wrap gap-4 pt-4">
+                <Link 
+                  href="/login" 
+                  className="bg-gold hover:bg-yellow-300 text-black px-10 py-5 rounded-2xl text-lg font-black uppercase tracking-wider transition-all hover:scale-[1.05] active:scale-95 shadow-xl shadow-gold/20"
+                >
+                  EMPEZAR AHORA
+                </Link>
+                <a href="#planes" className="bg-white/5 hover:bg-white/10 border border-white/10 px-10 py-5 rounded-2xl text-lg font-black uppercase tracking-wider transition-all">
+                  VER PLANES →
+                </a>
+              </div>
+            </motion.div>
 
-            {/* Live stats bar */}
-            <div className="flex flex-wrap gap-6 pt-2">
-              {[
-                { icon: Users, label: "Usuarios Activos", val: activeUsers.toLocaleString() },
-                { icon: DollarSign, label: "USDT Pagados", val: `${totalPaid.toLocaleString()}` },
-                { icon: Activity, label: "Depósitos Hoy", val: todayDeposit.toLocaleString() },
-              ].map((s, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <s.icon className="w-4 h-4 text-gold" />
+            {/* RIGHT — floating card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="hidden lg:flex justify-end"
+            >
+              <div className="card glow-gold w-full max-w-md p-10 animate-float border-white/10 bg-white/[0.03] backdrop-blur-3xl rounded-[2.5rem]">
+                <div className="flex justify-between items-start mb-10">
                   <div>
-                    <p className="text-lg font-black text-white leading-none">{s.val}</p>
-                    <p className="text-[9px] uppercase tracking-widest text-muted">{s.label}</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted mb-2">PLATAFORMA ACTIVA</p>
+                    <h3 className="text-3xl font-black uppercase italic tracking-tighter">{SITE_SHORT} CAPITAL</h3>
+                  </div>
+                  <div className="w-12 h-12 bg-gold rounded-2xl flex items-center justify-center shadow-lg shadow-gold/20">
+                    <TrendingUp className="w-6 h-6 text-black" />
                   </div>
                 </div>
-              ))}
-            </div>
-          </motion.div>
 
-          {/* RIGHT — floating card */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.92 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="flex justify-center md:justify-end"
-          >
-            <div className="card glow-green w-full max-w-sm p-8 animate-float">
-              <div className="flex justify-between items-start mb-8">
-                <div>
-                  <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted">PLATAFORMA ACTIVA</p>
-                  <h3 className="text-2xl font-black uppercase italic tracking-tighter mt-1">{SITE_SHORT}</h3>
-                </div>
-                <div className="w-10 h-10 bg-yellow-400/10 rounded-xl flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-gold" />
-                </div>
-              </div>
-
-              <div className="mb-6">
-                <p className="text-[9px] font-bold text-muted uppercase tracking-widest">Rendimiento 24h</p>
-                <div className="text-4xl font-black mt-1">
-                  USDT <span className="text-profit text-2xl">+50%</span>
-                </div>
-              </div>
-
-              {/* Bar mini-chart */}
-              <div className="h-20 flex items-end gap-1 mb-6">
-                {[35, 60, 45, 80, 55, 90, 70, 100, 82, 115].map((h, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ height: 0 }}
-                    animate={{ height: `${h}%` }}
-                    transition={{ delay: 0.5 + i * 0.05, duration: 0.4 }}
-                    className="flex-1 rounded-t-sm"
-                    style={{ background: `rgba(0,255,136,${0.1 + (h / 115) * 0.4})` }}
-                  />
-                ))}
-              </div>
-
-              {/* Plan preview */}
-              <div className="space-y-2">
-                {PLANS.slice(0, 3).map((p, i) => (
-                  <div key={i} className="flex justify-between items-center text-[11px] border-t border-white/5 pt-2">
-                    <span className="font-bold" style={{ color: p.accent }}>{p.name}</span>
-                    <span className="text-muted">${p.investment} → <span className="text-white font-bold">${p.price}</span></span>
+                <div className="space-y-8">
+                  <div>
+                    <p className="text-[10px] font-black text-muted uppercase tracking-widest mb-3">Rendimiento Estimado</p>
+                    <div className="flex items-baseline gap-3">
+                      <span className="text-5xl font-black tracking-tighter">USDT</span>
+                      <span className="text-profit text-4xl font-black">+50%</span>
+                      <span className="text-muted text-sm font-bold ml-auto">DAILY</span>
+                    </div>
                   </div>
-                ))}
-              </div>
 
-              <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/5">
-                <div className="flex items-center gap-2 text-profit text-[10px] font-bold uppercase tracking-widest">
-                  <span className="w-1.5 h-1.5 rounded-full bg-profit animate-pulse-slow" />
-                  Operacional
+                  {/* Bar Chart Representation */}
+                  <div className="h-24 flex items-end gap-1.5 px-2">
+                    {[35, 60, 45, 80, 55, 90, 70, 100, 82, 115, 95].map((h, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ height: 0 }}
+                        animate={{ height: `${h}%` }}
+                        transition={{ delay: 0.8 + i * 0.05, duration: 0.5 }}
+                        className="flex-1 rounded-t-lg bg-gradient-to-t from-gold/40 to-gold"
+                        style={{ opacity: 0.3 + (h / 115) * 0.7 }}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Trusted Badges */}
+                  <div className="flex items-center justify-between pt-8 border-t border-white/10">
+                    <div className="flex items-center gap-2.5 text-profit text-[11px] font-black uppercase tracking-widest">
+                      <div className="w-2 h-2 rounded-full bg-profit animate-pulse" />
+                      OPERACIONAL
+                    </div>
+                    <div className="text-[10px] text-muted font-black uppercase tracking-[0.2em]">
+                      TRC20 · SECURE
+                    </div>
+                  </div>
                 </div>
-                <span className="text-[9px] text-muted uppercase font-bold">TRC20 · Seguro</span>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
       </section>
-      
-      {/* ════════════════════════ GAMES SECTION ════════════════════════ */}
-      <GamesSection />
 
-      {/* ════════════════════════ HOW IT WORKS ════════════════════════ */}
-      <section id="como-funciona" className="py-32 border-t border-white/5 bg-white/[0.01]">
-        <div className="max-w-6xl mx-auto px-6">
-          <SectionHeader label="Proceso" title="¿Cómo Funciona?" sub="En 6 pasos simples, tu inversión estará activa y generando rendimientos." />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* ════════════════════════ STATS (Standalone) ════════════════════════ */}
+      <section className="py-20 border-y border-white/5 bg-white/[0.01] relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
             {[
-              { n: "01", icon: TrendingUp, title: "Elige tu Plan", desc: "Selecciona entre Starter ($30), Silver ($50) o Gold ($100) según tu capacidad de inversión." },
-              { n: "02", icon: DollarSign, title: "Envía USDT", desc: "Transfiere el monto exacto a nuestra wallet oficial en la red TRON (TRC20)." },
-              { n: "03", icon: Activity, title: "Copia el TXID", desc: "Obtén el hash de transacción de tu wallet o explorador blockchain." },
-              { n: "04", icon: ShieldCheck, title: "Verificación Automática", desc: "El sistema consulta TronScan, valida monto, wallet y confirmaciones en segundos." },
-              { n: "05", icon: Zap, title: "Inversión Activa", desc: "Tu plan se activa instantáneamente. Recibes confirmación en Telegram al instante." },
-              { n: "06", icon: Clock, title: "Cobras en 24h", desc: "Transcurridas las 24 horas, tu capital + ganancia se acredita automáticamente." },
+              { icon: Users, label: "Usuarios Inviertiendo", val: activeUsers.toLocaleString(), color: "text-blue-400" },
+              { icon: DollarSign, label: "USDT Pagados a Miembros", val: `${totalPaid.toLocaleString()}`, color: "text-gold" },
+              { icon: Activity, label: "Operaciones Exitosas Hoy", val: todayDeposit.toLocaleString(), color: "text-profit" },
             ].map((s, i) => (
-              <motion.div
-                key={i}
+              <motion.div 
+                key={i} 
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-                className="card p-7 space-y-4 group hover:border-yellow-400/20 transition-colors"
+                className="space-y-4"
               >
-                <div className="flex items-start justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-yellow-400/10 flex items-center justify-center text-gold group-hover:bg-yellow-400/20 transition-colors">
-                    <s.icon className="w-6 h-6" />
-                  </div>
-                  <span className="text-[9px] font-black text-muted tracking-widest">{s.n}</span>
-                </div>
-                <h3 className="text-base font-black uppercase tracking-tight">{s.title}</h3>
-                <p className="text-muted text-sm leading-relaxed">{s.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════════ SECURITY ════════════════════════ */}
-      <section id="seguridad" className="py-32 border-t border-white/5">
-        <div className="max-w-6xl mx-auto px-6">
-          <SectionHeader label="Seguridad" title="Sistema 100% Seguro" sub="Toda transacción es verificada directamente en la blockchain. Sin intermediarios." />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-            {[
-              { icon: ShieldCheck, title: "Verificación Blockchain Real", desc: "Consultamos directamente la API de TronScan para validar cada TXID en la red TRON." },
-              { icon: Lock, title: "Anti-Fraude Automático", desc: "El sistema detecta y rechaza TXIDs duplicados, montos incorrectos y wallets inválidas." },
-              { icon: Activity, title: "Sin Intervención Humana", desc: "Todo el proceso de verificación y activación es 100% automático. Sin errores humanos." },
-              { icon: Zap, title: "Infraestructura VPS Segura", desc: "Servidor dedicado con acceso restringido, monitoreo 24/7 y backups automáticos." },
-            ].map((s, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: i % 2 === 0 ? -16 : 16 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="card p-7 flex gap-5"
-              >
-                <div className="w-12 h-12 rounded-2xl bg-yellow-400/10 flex items-center justify-center text-gold shrink-0">
-                  <s.icon className="w-6 h-6" />
+                <div className={`w-14 h-14 mx-auto rounded-3xl bg-white/5 flex items-center justify-center ${s.color}`}>
+                  <s.icon className="w-7 h-7" />
                 </div>
                 <div>
-                  <h3 className="font-black text-sm uppercase tracking-tight mb-2">{s.title}</h3>
-                  <p className="text-muted text-sm">{s.desc}</p>
+                  <h4 className="text-4xl font-black tracking-tighter text-white mb-1 group-hover:scale-110 transition-transform">
+                    {s.val}
+                  </h4>
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted">{s.label}</p>
                 </div>
               </motion.div>
             ))}
           </div>
-
-          {/* Wallet address intentionally hidden from public pages — shown only on authenticated deposit page */}
         </div>
       </section>
 
-      {/* ════════════════════════ PLANS ════════════════════════ */}
-      <section id="planes" className="py-32 border-t border-white/5 bg-white/[0.01]">
-        <div className="max-w-7xl mx-auto px-6">
-          <SectionHeader label="Inversión" title="Planes de Inversión" sub="Capital de trabajo + ganancia garantizada en 24 horas." />
+      {/* ════════════════════════ PLANES ════════════════════════ */}
+      <section id="planes" className="py-32 relative">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold/5 blur-[150px] rounded-full pointer-events-none" />
+        
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <SectionHeader 
+            label="Inversión" 
+            title="🎯 PLANES DE ALTO RENDIMIENTO" 
+            sub="Capital de trabajo + ganancia garantizada procesada automáticamente en 24 horas." 
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {PLANS.map((plan, i) => (
@@ -390,51 +353,49 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                whileHover={{ scale: plan.badge === "POPULAR" ? 1.08 : 1.05 }}
-                className={`card p-8 relative overflow-hidden flex flex-col justify-between group transition-all duration-300 rounded-2xl border-gray-700 hover:shadow-xl ${
-                  plan.badge === "POPULAR" ? "border-gold/50 shadow-[0_0_30px_rgba(250,204,21,0.15)] scale-105" : ""
+                whileHover={{ y: -10 }}
+                className={`card p-10 relative overflow-hidden flex flex-col justify-between group transition-all duration-500 rounded-[2.5rem] border-white/5 bg-white/[0.02] hover:bg-white/[0.04] ${
+                  plan.badge === "POPULAR" ? "border-gold/30 shadow-[0_0_50px_rgba(250,204,21,0.1)] scale-[1.02]" : ""
                 }`}
               >
-                {/* Background Accent */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${plan.color} opacity-40 group-hover:opacity-60 transition-opacity pointer-events-none`} />
+                {/* Visual Flair */}
+                <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${plan.color} blur-[60px] opacity-20 transition-opacity group-hover:opacity-40`} />
                 
                 <div className="relative z-10">
-                  <div className="flex justify-between items-start mb-6">
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em]" style={{ color: plan.accent }}>
-                      PLAN {plan.name.toUpperCase()}
+                  <div className="flex justify-between items-start mb-10">
+                    <p className="text-[11px] font-black uppercase tracking-[0.4em]" style={{ color: plan.accent }}>
+                      {plan.name}
                     </p>
                     {plan.badge && (
-                      <div className={`px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-full leading-none ${
-                        plan.badge === "POPULAR" ? "bg-yellow-400 text-black animate-pulse" : "bg-white/10 text-white"
-                      }`}>
+                      <div className="px-3 py-1.5 text-[9px] font-black uppercase tracking-widest bg-gold text-black rounded-full leading-none animate-pulse-slow shadow-lg shadow-gold/20">
                         {plan.badge}
                       </div>
                     )}
                   </div>
 
-                  <div className="mb-8">
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-6xl font-extrabold tracking-tighter text-green-400">
+                  <div className="mb-10">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-7xl font-black tracking-tighter text-white">
                         ${plan.investment}
                       </span>
-                      <span className="text-xl font-bold text-muted uppercase">usdt</span>
+                      <span className="text-xl font-bold text-muted uppercase italic">usdt</span>
                     </div>
-                    <div className="mt-4 space-y-1">
-                      <p className="text-green-400 text-base font-bold">+{plan.profit} USDT ganancia</p>
-                      <p className="text-gold text-sm font-black uppercase tracking-widest opacity-80">Total: ${plan.price}</p>
+                    <div className="mt-4 flex flex-col gap-1">
+                      <p className="text-profit text-lg font-black italic uppercase tracking-tight">+{plan.profit} USDT GANANCIA</p>
+                      <p className="text-muted/60 text-xs font-bold tracking-widest uppercase">RECIBES EN TOTAL: ${plan.price}</p>
                     </div>
                   </div>
 
-                  <div className="space-y-3 mb-8 text-base">
+                  <div className="space-y-4 mb-10 text-sm">
                     {[
-                      ["ROI", plan.roi],
-                      ["Duración", "24h"],
-                      ["Red", "TRC20"],
-                      ["Verificación", "Automática"],
+                      ["ROI TOTAL", plan.roi],
+                      ["DURACIÓN", "24 HORAS"],
+                      ["RED NATIVA", "TRON (TRC20)"],
+                      ["PAGO", "AUTOMÁTICO"],
                     ].map(([k, v], j) => (
-                      <div key={j} className="flex justify-between border-t border-white/5 pt-3">
-                        <span className="text-muted/60">{k}</span>
-                        <span className={`font-bold ${v === "Automática" || k === "ROI" ? "text-green-400" : "text-white"}`}>{v}</span>
+                      <div key={j} className="flex justify-between items-center py-3 border-t border-white/5">
+                        <span className="text-[10px] font-bold text-muted uppercase tracking-widest">{k}</span>
+                        <span className={`font-black tracking-tight ${k === "ROI TOTAL" ? "text-profit" : "text-white"}`}>{v}</span>
                       </div>
                     ))}
                   </div>
@@ -442,9 +403,10 @@ export default function Home() {
 
                 <a 
                   href={`${TELEGRAM_BOT_LINK}?start=plan_${plan.price}`} 
-                  className="relative z-10 w-full text-center bg-yellow-400 hover:bg-yellow-300 text-black py-4 rounded-xl text-lg font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg shadow-yellow-400/20"
+                  target="_blank"
+                  className="relative z-10 w-full text-center bg-gold hover:bg-yellow-300 text-black py-5 rounded-2xl text-base font-black uppercase tracking-[0.2em] transition-all hover:shadow-[0_0_30px_rgba(250,204,21,0.3)]"
                 >
-                  INVERTIR AHORA
+                  INVERTIR YA
                 </a>
               </motion.div>
             ))}
@@ -452,192 +414,126 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════════════════════════ EDUCACIÓN Y RESULTADOS ════════════════════════ */}
-      <section id="educacion" className="py-32 border-t border-white/5">
-        <div className="max-w-6xl mx-auto px-6">
-          <SectionHeader 
-            label="Educación y Resultados" 
-            title="Aprende cómo generar ingresos con nosotros" 
-            sub="Mira resultados reales, estrategias y educación financiera directamente desde nuestro canal." 
-          />
+      {/* ════════════════════════ CTA / GET STARTED ════════════════════════ */}
+      <section className="py-32 relative overflow-hidden">
+        <div className="max-w-5xl mx-auto px-6 relative z-10">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="card p-16 md:p-24 rounded-[3rem] bg-gradient-to-br from-gold/20 via-white/[0.02] to-profit/10 border-white/10 text-center space-y-10 relative overflow-hidden"
+          >
+             {/* Background Effects */}
+             <div className="absolute inset-0 bg-black/60 backdrop-blur-3xl -z-10" />
+             <div className="absolute top-0 right-0 w-64 h-64 bg-gold/10 blur-[100px] rounded-full" />
+             <div className="absolute bottom-0 left-0 w-64 h-64 bg-profit/10 blur-[100px] rounded-full" />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { id: "Ihmyq9UqUus", title: "Como gane en 20 minutos más de $400 dólares" },
-              { id: "CeqnJLdH-pw", title: "2 PAGINA PARA GENERAR INGRESOS GANA 3 DOLA" },
-              { id: "W8_CnsWa1y4", title: "Como ganar dinero con Copy trading" },
-            ].map((video, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="group cursor-pointer"
-              >
-                <div className="card overflow-hidden aspect-video relative mb-4 border-white/5 group-hover:border-gold/30 transition-all">
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    src={`${YOUTUBE_EMBED}${video.id}?autoplay=0`}
-                    title={video.title}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="w-full h-full relative z-10"
-                  />
-                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors z-20 pointer-events-none flex items-center justify-center">
-                    <div className="w-12 h-12 bg-gold rounded-full flex items-center justify-center scale-90 group-hover:scale-100 transition-transform shadow-lg shadow-gold/20">
-                      <Zap className="w-6 h-6 text-black fill-current" />
-                    </div>
-                  </div>
-                </div>
-                <h3 className="text-sm font-bold leading-tight group-hover:text-gold transition-colors">{video.title}</h3>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <a
-              href={YOUTUBE_CHANNEL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-gold inline-flex items-center gap-2"
-            >
-              Ver más en YouTube
-            </a>
-          </div>
+             <h2 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter leading-none">
+               ¿LISTO PARA TU PRIMERA <span className="text-gold">GANANCIA?</span>
+             </h2>
+             <p className="text-muted text-lg max-w-2xl mx-auto font-medium">
+               Únete a los miles de inversores que ya están generando USDT de forma pasiva y segura mediante nuestra infraestructura blockchain avanzada.
+             </p>
+             <div className="flex flex-col sm:flex-row justify-center gap-6 pt-6">
+                <Link href="/login" className="bg-gold hover:bg-yellow-300 text-black px-12 py-6 rounded-2xl text-xl font-black uppercase tracking-widest transition-all shadow-2xl shadow-gold/30">
+                  CREAR MI CUENTA
+                </Link>
+                <a 
+                  href={TELEGRAM_BOT_LINK} 
+                  target="_blank"
+                  className="bg-white/10 hover:bg-white/20 border border-white/20 px-12 py-6 rounded-2xl text-xl font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3"
+                >
+                  <MessageCircle className="w-6 h-6" /> SOPORTE
+                </a>
+             </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* ════════════════════════ TRANSPARENCIA Y COMUNIDAD ════════════════════════ */}
-      <section className="py-32 border-t border-white/5 bg-white/[0.01]">
-        <div className="max-w-6xl mx-auto px-6">
-          <SectionHeader 
-            label="Confianza" 
-            title="Transparencia y Comunidad" 
-            sub="Nuestra prioridad es que inviertas con total seguridad y conocimiento." 
-          />
+      {/* ════════════════════════ EXTRA CONTENT SECTIONS ════════════════════════ */}
+      <GamesSection />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <section id="como-funciona" className="py-32 border-t border-white/5 bg-white/[0.01]">
+        <div className="max-w-7xl mx-auto px-6">
+          <SectionHeader label="Proceso" title="¿Cómo Funciona?" sub="En 6 pasos simples, tu inversión estará activa y generando rendimientos." />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { title: "Contenido educativo diario", desc: "Subimos videos y tutoriales para que entiendas el mercado y nuestra estrategia." },
-              { title: "Resultados compartidos públicamente", desc: "Mostramos retiros, depósitos y operativas reales para total transparencia." },
-              { title: "Comunidad en crecimiento", desc: "Miles de inversores confían en nuestra metodología y soporte personalizado." },
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="card p-8 text-center space-y-4 border-white/5 bg-white/[0.02]"
-              >
-                <div className="w-12 h-12 bg-profit/10 rounded-2xl flex items-center justify-center mx-auto text-profit">
-                  <CheckCircle2 className="w-6 h-6" />
-                </div>
-                <h3 className="font-black text-lg uppercase tracking-tight">{item.title}</h3>
-                <p className="text-muted text-sm leading-relaxed">{item.desc}</p>
-              </motion.div>
+              { n: "01", icon: TrendingUp, title: "Elige tu Plan", desc: "Selecciona el monto que deseas invertir según nuestras opciones disponibles." },
+              { n: "02", icon: DollarSign, title: "Envía USDT", desc: "Transfiere a nuestra wallet oficial en la red TRON (TRC20) únicamente." },
+              { n: "03", icon: Activity, title: "Envía el TXID", desc: "El bot validará tu hash de transacción directamente en el explorador." },
+              { n: "04", icon: ShieldCheck, title: "Verificación", desc: "El sistema valida la Red, el Monto y el Destinatario automáticamente." },
+              { n: "05", icon: Zap, title: "Activación", desc: "Tu inversión se marca como ACTIVA al instante tras la confirmación." },
+              { n: "06", icon: Clock, title: "Recibe Pagos", desc: "En 24 horas tu balance se actualiza con el capital + la ganancia." },
+            ].map((s, i) => (
+              <div key={i} className="card p-10 space-y-6 group bg-white/[0.02] border-white/5 hover:border-gold/20 transition-all rounded-[2rem]">
+                 <div className="flex justify-between items-center text-gold">
+                    <s.icon className="w-10 h-10" />
+                    <span className="text-4xl font-black opacity-10">{s.n}</span>
+                 </div>
+                 <h3 className="text-xl font-black uppercase tracking-tight">{s.title}</h3>
+                 <p className="text-muted text-sm leading-relaxed">{s.desc}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-
-      {/* ════════════════════════ FAQ ════════════════════════ */}
       <section id="faq" className="py-32 border-t border-white/5">
-        <div className="max-w-3xl mx-auto px-6">
-          <SectionHeader label="FAQ" title="Preguntas Frecuentes" />
-
-          <div className="space-y-3">
-            {FAQS.map((faq, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 8 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-              >
-                <FAQItem q={faq.q} a={faq.a} />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════════ SUPPORT ════════════════════════ */}
-      <section id="soporte" className="py-32 border-t border-white/5 bg-white/[0.01]">
         <div className="max-w-4xl mx-auto px-6">
-          <SectionHeader label="Contacto" title="Soporte 24/7" sub="Nuestro equipo está disponible en todo momento para ayudarte." />
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <a
-              href={TELEGRAM_BOT_LINK}
-              target="_blank"
-              className="card card-hover p-8 text-center space-y-4"
-            >
-              <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center mx-auto text-blue-400">
-                <MessageCircle className="w-7 h-7" />
-              </div>
-              <h3 className="font-black text-lg uppercase italic">Telegram</h3>
-              <p className="text-muted text-sm">Soporte oficial del bot</p>
-              <p className="text-blue-400 text-[10px] font-black uppercase tracking-widest">Contactar →</p>
-            </a>
-
-            <a
-              href={`https://wa.me/${WHATSAPP_1.replace(/\D/g, "")}`}
-              target="_blank"
-              className="card card-hover p-8 text-center space-y-4"
-            >
-              <div className="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center mx-auto text-green-400">
-                <Phone className="w-7 h-7" />
-              </div>
-              <h3 className="font-black text-lg uppercase italic">WhatsApp 1</h3>
-              <p className="text-muted text-sm">{WHATSAPP_1}</p>
-              <p className="text-green-400 text-[10px] font-black uppercase tracking-widest">Escribir →</p>
-            </a>
-
-            <a
-              href={`https://wa.me/${WHATSAPP_2.replace(/\D/g, "")}`}
-              target="_blank"
-              className="card card-hover p-8 text-center space-y-4"
-            >
-              <div className="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center mx-auto text-green-400">
-                <Phone className="w-7 h-7" />
-              </div>
-              <h3 className="font-black text-lg uppercase italic">WhatsApp 2</h3>
-              <p className="text-muted text-sm">{WHATSAPP_2}</p>
-              <p className="text-green-400 text-[10px] font-black uppercase tracking-widest">Escribir →</p>
-            </a>
+          <SectionHeader label="Soporte" title="Preguntas Frecuentes" sub="Resolvemos tus dudas sobre el sistema y los pagos." />
+          <div className="space-y-4">
+            {FAQS.map((faq, i) => (
+              <FAQItem key={i} q={faq.q} a={faq.a} />
+            ))}
           </div>
         </div>
       </section>
 
       {/* ════════════════════════ FOOTER ════════════════════════ */}
-      <footer className="py-16 border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-gold rounded-lg flex items-center justify-center">
-              <TrendingUp className="text-black w-4 h-4" />
+      <footer className="py-20 border-t border-white/5 bg-black relative">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-20">
+            <div className="space-y-6 max-w-sm">
+              <Link href="/" className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gold rounded-2xl flex items-center justify-center shadow-lg shadow-gold/20">
+                  <TrendingUp className="text-black w-6 h-6" />
+                </div>
+                <span className="font-black text-2xl uppercase tracking-tighter">{SITE_NAME}</span>
+              </Link>
+              <p className="text-muted text-sm leading-relaxed">
+                La plataforma líder de inversión automatizada en USDT TRC20. Seguridad blockchain garantizada y rendimientos diarios estables.
+              </p>
             </div>
-            <div>
-              <span className="font-black text-sm uppercase tracking-tight block">{SITE_NAME}</span>
-              <span className="text-[8px] uppercase tracking-[0.2em] text-muted">Platforma de Inversión Automatizada</span>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-12">
+              <div className="space-y-4">
+                <h5 className="text-[10px] font-black uppercase tracking-[0.3em] text-white">Plataforma</h5>
+                <ul className="space-y-3 text-sm text-muted">
+                  <li><a href="#planes" className="hover:text-gold transition-colors">Planes</a></li>
+                  <li><a href="#como-funciona" className="hover:text-gold transition-colors">Proceso</a></li>
+                  <li><a href="#juegos" className="hover:text-gold transition-colors">Juegos</a></li>
+                </ul>
+              </div>
+              <div className="space-y-4">
+                <h5 className="text-[10px] font-black uppercase tracking-[0.3em] text-white">Soporte</h5>
+                <ul className="space-y-3 text-sm text-muted">
+                  <li><a href="/login" className="hover:text-gold transition-colors">Dashboard</a></li>
+                  <li><a href="/reglas" className="hover:text-gold transition-colors">Reglas</a></li>
+                  <li><a href={TELEGRAM_BOT_LINK} className="hover:text-gold transition-colors">Telegram</a></li>
+                </ul>
+              </div>
             </div>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-6 text-[10px]">
-            {["#como-funciona", "#planes", "#educacion", "#seguridad", "/reglas", "#faq"].map((href, i) => (
-              <a key={i} href={href} className="nav-link">
-                {["Cómo Funciona", "Planes", "YouTube", "Seguridad", "Reglas", "FAQ"][i]}
-              </a>
-            ))}
+          <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted">
+              © 2026 {SITE_NAME}. Todos los derechos reservados.
+            </p>
+            <div className="flex items-center gap-8">
+               <span className="text-[10px] font-black uppercase tracking-widest text-profit">Red TRC20 Only</span>
+               <span className="text-[10px] font-black uppercase tracking-widest text-gold italic">Alpha Verified</span>
+            </div>
           </div>
-
-          <p className="text-[10px] uppercase tracking-[0.3em] text-muted text-center">
-            © 2026 {SITE_NAME}. TRC20 · Blockchain Verified.
-          </p>
         </div>
       </footer>
 
