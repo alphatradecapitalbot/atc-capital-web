@@ -18,13 +18,19 @@ import Link from "next/link";
 
 import { useCountUp, MiniChart, ParticleBackground } from "@/components/Effects";
 
-// ─── Live Stats Hook ───────────────────────────────────────
-function useLiveCounter(base: number, variance: number, interval = 8000) {
+function useLiveCounter(base: number, variance: number, interval = 3000, decimals = 0) {
   const [val, setVal] = useState(base);
+  
   useEffect(() => {
-    const t = setInterval(() => setVal(v => v + Math.floor(Math.random() * variance)), interval);
+    const t = setInterval(() => {
+      setVal(v => {
+        const increment = Math.random() * variance;
+        return v + increment;
+      });
+    }, interval);
     return () => clearInterval(t);
-  }, []);
+  }, [variance, interval]);
+
   return val;
 }
 
@@ -214,8 +220,18 @@ function LiveActivity() {
 }
 
 // ─── Stat Card ────────────────────────────────────────────
-function StatCard({ icon: Icon, label, base, suffix = "", sub }: { icon: React.ComponentType<{ size?: number; className?: string }>, label: string, base: number, suffix?: string, sub: string }) {
-  const { val, ref } = useCountUp(base, 2200);
+function StatCard({ icon: Icon, label, base, suffix = "", sub, decimals = 0, isLive = false }: { 
+  icon: React.ComponentType<{ size?: number; className?: string }>, 
+  label: string, 
+  base: number, 
+  suffix?: string, 
+  sub: string,
+  decimals?: number,
+  isLive?: boolean
+}) {
+  const { val, ref } = useCountUp(base, 2200, decimals);
+  const displayVal = isLive ? base : val;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -226,21 +242,29 @@ function StatCard({ icon: Icon, label, base, suffix = "", sub }: { icon: React.C
       style={{
         background: "rgba(255,255,255,0.04)",
         backdropFilter: "blur(24px)",
-        borderColor: "rgba(255,215,0,0.15)",
-        boxShadow: "0 0 40px rgba(255,215,0,0.04)"
+        borderColor: isLive ? "rgba(0,255,136,0.3)" : "rgba(255,215,0,0.15)",
+        boxShadow: isLive ? "0 0 40px rgba(0,255,136,0.06)" : "0 0 40px rgba(255,215,0,0.04)"
       }}
     >
       <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-      <div className="p-3 rounded-2xl w-fit" style={{ background: "rgba(255,215,0,0.1)" }}>
-        <Icon size={20} className="text-yellow-400" />
+      
+      {isLive && (
+        <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 animate-pulse" />
+      )}
+
+      <div className="p-3 rounded-2xl w-fit" style={{ background: isLive ? "rgba(0,255,136,0.1)" : "rgba(255,215,0,0.1)" }}>
+        <Icon size={20} className={isLive ? "text-green-400" : "text-yellow-400"} />
       </div>
       <div>
         <p className="text-[10px] font-black text-yellow-400/60 uppercase tracking-widest mb-1">{label}</p>
-        <p className="text-3xl font-black text-white tracking-tight">
-          <span ref={ref}>{val.toLocaleString()}</span>{suffix}
+        <p className={`text-3xl font-black text-white tracking-tight transition-all duration-700 ${isLive ? 'drop-shadow-[0_0_10px_rgba(0,255,136,0.3)]' : ''}`}>
+          <span ref={isLive ? null : ref}>
+            {displayVal.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}
+          </span>
+          {suffix}
         </p>
-        <p className="text-[10px] font-bold text-green-400 flex items-center gap-1 mt-1">
-          <Activity size={10} /> {sub}
+        <p className={`text-[10px] font-bold flex items-center gap-1 mt-1 ${isLive ? 'text-green-400' : 'text-green-400/80'}`}>
+          <Activity size={10} className={isLive ? 'animate-pulse' : ''} /> {sub}
         </p>
       </div>
     </motion.div>
@@ -269,6 +293,18 @@ const FEATURED_PLANS = [
     featured: true
   }
 ];
+
+const getPlanIcon = (name: string) => {
+  const n = name.toUpperCase();
+  if (n.includes('STARTER')) return '🚀';
+  if (n.includes('SILVER')) return '🪙';
+  if (n.includes('GOLD')) return '🥇';
+  if (n.includes('DIAMOND')) return '💎';
+  if (n.includes('PRO')) return '⚡';
+  if (n.includes('ELITE')) return '🔥';
+  if (n.includes('PREMIER')) return '👑';
+  return '🏦';
+};
 
 function PlanCard({ plan, index }: { plan: typeof FEATURED_PLANS[0]; index: number }) {
   const { val: invVal, ref: invRef } = useCountUp(plan.investment, 2000);
@@ -311,9 +347,18 @@ function PlanCard({ plan, index }: { plan: typeof FEATURED_PLANS[0]; index: numb
 
       <div className="relative z-10 p-8 flex flex-col flex-1">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-2xl font-black tracking-wider" style={{ color: plan.color }}>{plan.name}</h3>
-          <div className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider" style={{ background: `${plan.color}18`, color: plan.color, border: `1px solid ${plan.color}40` }}>
+        <div className="flex items-center justify-between mt-2 mb-2">
+          <h3 
+            className={`text-lg md:text-xl font-extrabold uppercase tracking-wider bg-clip-text text-transparent ${
+              plan.featured 
+                ? 'bg-gradient-to-r from-yellow-300 to-yellow-500 drop-shadow-[0_0_12px_rgba(255,215,0,0.5)]' 
+                : 'bg-gradient-to-r from-[#00FFB2] to-[#00D1FF] drop-shadow-[0_0_10px_rgba(0,255,178,0.3)]'
+            }`}
+          >
+            <span className="mr-2 inline-block filter-none drop-shadow-none text-white">{getPlanIcon(plan.name)}</span>
+            {plan.name}
+          </h3>
+          <div className="bg-green-500/10 text-green-400 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider border border-green-500/20">
             ACTIVO
           </div>
         </div>
@@ -374,10 +419,10 @@ export default function Home() {
   const { user } = useAuth();
   const router = useRouter();
 
-  const fallbackStats = { users: 1247, paid: 89510, deposits: 346 };
-  const activeUsers = useLiveCounter(fallbackStats.users, 2);
-  const totalPaid = useLiveCounter(fallbackStats.paid, 50);
-  const todayDeposit = useLiveCounter(fallbackStats.deposits, 1);
+  const fallbackStats = { users: 1247, paid: 63787.23, deposits: 346 };
+  const activeUsers = useLiveCounter(fallbackStats.users, 2, 8000);
+  const totalPaid = useLiveCounter(fallbackStats.paid, 4.85, 3000, 2);
+  const todayDeposit = useLiveCounter(fallbackStats.deposits, 1, 10000);
 
   useEffect(() => {
     try {
@@ -435,12 +480,12 @@ export default function Home() {
               >
                 EMPEZAR AHORA →
               </Link>
-              <a
-                href="#planes"
+              <Link
+                href="/plans"
                 className="px-10 py-5 font-black uppercase text-sm rounded-2xl text-white border border-white/10 backdrop-blur-xl transition-all hover:bg-white/5 hover:border-yellow-400/40"
               >
                 VER PLANES
-              </a>
+              </Link>
             </div>
           </motion.div>
         </section>
@@ -448,9 +493,9 @@ export default function Home() {
         {/* ═══ METRICS (GLASSMORPHISM CARDS) ═════════════════ */}
         <section className="py-20 max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <StatCard icon={Users} label="Usuarios activos" base={activeUsers} sub="Real-time" />
-            <StatCard icon={DollarSign} label="USDT pagados" base={totalPaid} suffix=" USDT" sub="+$50 cada minuto" />
-            <StatCard icon={Activity} label="Depósitos hoy" base={todayDeposit} sub="TRC20 nativo" />
+            <StatCard icon={Users} label="Usuarios activos" base={activeUsers} sub="Real-time flow" />
+            <StatCard icon={DollarSign} label="USDT pagados" base={totalPaid} suffix=" USDT" sub="+$120 en los últimos minutos" decimals={2} isLive={true} />
+            <StatCard icon={Activity} label="Depósitos hoy" base={todayDeposit} sub="TRC20 activado" />
           </div>
         </section>
 
@@ -599,32 +644,28 @@ export default function Home() {
         </section>
 
         {/* ═══ CTA SECTION ═════════════════════════════════════ */}
-        <section className="py-20 max-w-7xl mx-auto px-6">
+        <section className="py-16 mx-auto px-6 max-w-4xl">
           <motion.div
             initial={{ opacity: 0, scale: 0.97 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="relative p-12 md:p-24 rounded-[48px] text-center overflow-hidden"
-            style={{
-              background: "linear-gradient(135deg, #FFD700 0%, #B8960C 100%)",
-              boxShadow: "0 30px 80px rgba(255,215,0,0.3)"
-            }}
+            className="relative px-6 py-10 md:py-12 rounded-2xl text-center overflow-hidden bg-gradient-to-br from-[#FFD700] to-[#FFC300] shadow-[0_0_40px_rgba(255,215,0,0.2)]"
           >
             <div className="absolute inset-0 opacity-10 pointer-events-none"
               style={{ background: "radial-gradient(circle at 30% 20%, rgba(0,0,0,0.5), transparent 60%)" }} />
-            <div className="relative z-10">
-              <h2 className="text-5xl md:text-8xl font-black leading-none italic text-black tracking-tighter">
-                ¿LISTO PARA<br />EL PROGRESO?
+            <div className="relative z-10 space-y-4">
+              <h2 className="text-3xl md:text-4xl font-extrabold leading-tight text-black tracking-tight">
+                ¿LISTO PARA EL PROGRESO?
               </h2>
-              <p className="text-black/60 text-lg md:text-xl mt-8 max-w-xl mx-auto font-bold uppercase tracking-tight">
+              <p className="text-black/80 text-sm md:text-base max-w-xl mx-auto font-bold uppercase tracking-tight">
                 Únete ahora a la mayor red de inversores USDT. Seguridad, rapidez y transparencia total.
               </p>
-              <div className="flex flex-col sm:flex-row justify-center gap-6 mt-12">
-                <Link href="/login" className="px-14 py-6 bg-black text-white font-black uppercase text-sm rounded-2xl shadow-2xl transition-all hover:scale-105">
+              <div className="flex flex-col sm:flex-row justify-center gap-4 pt-2">
+                <Link href="/login" className="px-6 py-3 bg-black text-white font-black uppercase text-sm rounded-xl shadow-lg transition-all hover:scale-105">
                   CREAR CUENTA
                 </Link>
-                <a href={TELEGRAM_BOT_LINK} target="_blank" className="px-14 py-6 bg-white/20 hover:bg-white/30 backdrop-blur-md text-black font-black uppercase text-sm rounded-2xl transition-all flex items-center justify-center gap-3">
-                  <MessageCircle size={20} /> SOPORTE 24/7
+                <a href={TELEGRAM_BOT_LINK} target="_blank" className="px-6 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-md text-black font-black uppercase text-sm rounded-xl transition-all flex items-center justify-center gap-2">
+                  <MessageCircle size={18} /> SOPORTE 24/7
                 </a>
               </div>
             </div>
@@ -668,7 +709,7 @@ export default function Home() {
               <div className="space-y-5">
                 <h5 className="text-white text-xs font-black tracking-widest uppercase">Plataforma</h5>
                 <ul className="space-y-3">
-                  <li><a href="#planes" className="text-gray-500 hover:text-yellow-400 font-bold uppercase text-[10px] tracking-widest transition-all">Planes Activos</a></li>
+                  <li><Link href="/plans" className="text-gray-500 hover:text-yellow-400 font-bold uppercase text-[10px] tracking-widest transition-all">Planes Activos</Link></li>
                   <li><a href="/login" className="text-gray-500 hover:text-yellow-400 font-bold uppercase text-[10px] tracking-widest transition-all">Dashboard</a></li>
                   <li><a href="/reglas" className="text-gray-500 hover:text-yellow-400 font-bold uppercase text-[10px] tracking-widest transition-all">Reglas</a></li>
                 </ul>

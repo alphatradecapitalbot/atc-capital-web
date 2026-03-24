@@ -231,6 +231,109 @@ export default function AdminDashboard() {
 
       </div>
 
+      {/* Profit Analytics Chart (NEW) */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="card p-8 border-white/5 bg-white/[0.01]"
+      >
+        <div className="flex justify-between items-center mb-10">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gold">Analítica de Rendimiento</p>
+            <h3 className="text-xl font-black text-white mt-1 uppercase italic tracking-tight">Flujo de Capital (7d)</h3>
+          </div>
+          <div className="flex gap-6">
+            <span className="flex items-center gap-2 text-[10px] font-black text-muted uppercase tracking-widest">
+              <div className="w-2 h-2 rounded-full bg-gold shadow-[0_0_8px_rgba(255,215,0,0.5)]" /> Depósitos
+            </span>
+            <span className="flex items-center gap-2 text-[10px] font-black text-muted uppercase tracking-widest">
+              <div className="w-2 h-2 rounded-full bg-profit" /> Retiros
+            </span>
+          </div>
+        </div>
+
+        <div className="h-64 w-full relative group">
+           {/* Simple SVG Chart Representation */}
+           <svg viewBox="0 0 1000 300" className="w-full h-full overflow-visible">
+              <defs>
+                <linearGradient id="gradGold" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#FFD700" stopOpacity="0.2" />
+                  <stop offset="100%" stopColor="#FFD700" stopOpacity="0" />
+                </linearGradient>
+                <linearGradient id="gradProfit" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#00FF88" stopOpacity="0.1" />
+                  <stop offset="100%" stopColor="#00FF88" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              
+              {/* Guidelines */}
+              <line x1="0" y1="280" x2="1000" y2="280" stroke="white" strokeOpacity="0.05" strokeWidth="1" />
+              <line x1="0" y1="180" x2="1000" y2="180" stroke="white" strokeOpacity="0.03" strokeWidth="1" />
+              <line x1="0" y1="80" x2="1000" y2="80" stroke="white" strokeOpacity="0.01" strokeWidth="1" />
+
+              {/* Deposits Area (Gold) */}
+              <motion.path 
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 1.5, ease: "easeOut" }}
+                d="M0,250 Q150,220 300,180 T600,120 T900,150 T1000,100 L1000,300 L0,300 Z" 
+                fill="url(#gradGold)" 
+              />
+              <motion.path 
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 1.5, ease: "easeOut" }}
+                d="M0,250 Q150,220 300,180 T600,120 T900,150 T1000,100" 
+                fill="none" 
+                stroke="#FFD700" 
+                strokeWidth="3" 
+                strokeLinecap="round" 
+              />
+
+              {/* Withdrawals Area (Green) */}
+              <motion.path 
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
+                d="M0,280 Q200,260 400,230 T700,180 T1000,160 L1000,300 L0,300 Z" 
+                fill="url(#gradProfit)" 
+              />
+              <motion.path 
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
+                d="M0,280 Q200,260 400,230 T700,180 T1000,160" 
+                fill="none" 
+                stroke="#00FF88" 
+                strokeWidth="2" 
+                strokeDasharray="6,4" 
+                strokeOpacity="0.5" 
+              />
+           </svg>
+
+           {/* Hover info overlay */}
+           <div className="absolute top-1/2 left-2/3 -translate-y-1/2 bg-black/60 backdrop-blur-xl border border-white/10 p-5 rounded-[24px] opacity-0 group-hover:opacity-100 transition-all duration-300 scale-95 group-hover:scale-100 shadow-2xl">
+              <p className="text-[10px] text-muted font-black uppercase tracking-[0.2em]">Corte de Hoy</p>
+              <div className="mt-3 space-y-2">
+                <p className="text-base font-black text-white flex justify-between gap-8">
+                  <span className="text-gold">+$2,450.00</span>
+                  <span className="opacity-20">DEPOSIT</span>
+                </p>
+                <p className="text-base font-black text-white flex justify-between gap-8">
+                  <span className="text-profit">-$890.12</span>
+                  <span className="opacity-20">PAYOUT</span>
+                </p>
+              </div>
+           </div>
+        </div>
+        
+        <div className="grid grid-cols-7 mt-10 border-t border-white/5 pt-6">
+          {['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'].map(d => (
+            <div key={d} className="text-center text-[10px] font-black text-muted/30 uppercase tracking-[0.3em]">{d}</div>
+          ))}
+        </div>
+      </motion.div>
     </div>
   );
 }

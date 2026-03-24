@@ -1,217 +1,177 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { CheckCircle2 } from "lucide-react";
 import { PLANS, TELEGRAM_BOT_LINK } from "@/lib/constants";
-import { useCountUp, ParticleBackground } from "@/components/Effects";
-
-// ─── Badge config ─────────────────────────────────────────
-const BADGES: Record<string, { label: string; bg: string; glow: string }> = {
-  POPULAR:     { label: "🔥 POPULAR",     bg: "#00FF88", glow: "rgba(0,255,136,0.7)" },
-  RECOMENDADO: { label: "⭐ RECOMENDADO", bg: "#FFD700", glow: "rgba(255,215,0,0.7)" },
-  VIP:         { label: "💎 VIP",         bg: "#c084fc", glow: "rgba(192,132,252,0.7)" },
-};
-
-// ─── Sparkline (contained, non-overflowing) ───────────────
-function SparkLine() {
-  return (
-    <div className="w-full flex-shrink-0 overflow-hidden" style={{ height: "40px" }}>
-      <svg width="100%" height="40" viewBox="0 0 200 40" preserveAspectRatio="none" style={{ display: "block" }} aria-hidden>
-        <defs>
-          <linearGradient id={`sg`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#00FF88" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="#00FF88" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <path d="M0 32 C 20 28,35 36,55 24 C 75 10,90 18,110 10 C 130 2,150 6,170 3 C 185 1,195 2,200 1 L 200 40 L 0 40 Z" fill="url(#sg)" />
-        <path d="M0 32 C 20 28,35 36,55 24 C 75 10,90 18,110 10 C 130 2,150 6,170 3 C 185 1,195 2,200 1"
-          fill="none" stroke="#00FF88" strokeWidth="1.5"
-          style={{ filter: "drop-shadow(0 0 3px rgba(0,255,136,0.55))" }} />
-        <circle cx="200" cy="1" r="2.5" fill="#00FF88" opacity="0.85" />
-      </svg>
-    </div>
-  );
-}
+import { useCountUp, ParticleBackground, MiniChart } from "@/components/Effects";
 
 // ─── Plan Card ────────────────────────────────────────────
+const getPlanIcon = (name: string) => {
+  const n = name.toUpperCase();
+  if (n.includes('STARTER')) return '🚀';
+  if (n.includes('SILVER')) return '🪙';
+  if (n.includes('GOLD')) return '🥇';
+  if (n.includes('DIAMOND')) return '💎';
+  if (n.includes('PRO')) return '⚡';
+  if (n.includes('ELITE')) return '🔥';
+  if (n.includes('PREMIER')) return '👑';
+  return '🏦';
+};
+
 function PlanCard({ plan, index }: { plan: typeof PLANS[0]; index: number }) {
   const { val: invVal,    ref: invRef    } = useCountUp(plan.investment, 1600);
   const { val: profitVal, ref: profitRef } = useCountUp(plan.profit,     2000);
-  const { val: totalVal,  ref: totalRef  } = useCountUp(plan.investment + plan.profit, 1800);
 
-  const badge    = (plan as { badge?: string }).badge;
-  const featured = !!badge;
-  const bc       = badge ? BADGES[badge] : null;
+  const isFeatured = plan.name?.toUpperCase() === "GOLD";
+  const glow = isFeatured ? "rgba(255,215,0,0.35)" : "rgba(0,255,136,0.15)";
+  const color = isFeatured ? "#FFD700" : "#00FF88";
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.1 }}
-      transition={{ duration: 0.45, delay: index * 0.05 }}
-      /* min-w-0 + w-full prevent CSS grid cell blowout */
-      className="min-w-0 w-full max-w-sm mx-auto relative flex flex-col rounded-2xl overflow-hidden group"
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.05 }}
+      // Estilo general pedido: bg-gradient, rounded, padding, hover scale y shadow suave verde
+      className="relative flex flex-col rounded-2xl overflow-hidden group cursor-pointer transition-all duration-300 bg-gradient-to-b from-[#0B0B0B] to-[#050505] p-5 md:p-6 w-full max-w-sm mx-auto min-w-0 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(0,255,136,0.15)]"
       style={{
-        background: "linear-gradient(160deg, #0d0d0d 0%, #050505 100%)",
-        border: featured ? "1.5px solid rgba(0,255,136,0.5)" : "1.5px solid rgba(0,255,136,0.12)",
-        boxShadow: featured
-          ? "0 0 28px rgba(0,255,136,0.2), 0 0 70px rgba(0,255,136,0.05)"
-          : "0 0 18px rgba(0,255,136,0.09)",
-        cursor: "pointer",
-        transform: featured ? "scale(1.02)" : "scale(1)",
-      }}
-      whileHover={{
-        scale: featured ? 1.05 : 1.03,
-        y: -5,
-        boxShadow: "0 0 40px rgba(0,255,136,0.4)",
-        transition: { duration: 0.2 },
+        border: isFeatured ? "1px solid rgba(255,215,0,0.5)" : "1px solid rgba(255,255,255,0.05)",
+        boxShadow: isFeatured ? "0 0 40px rgba(255,215,0,0.15)" : "none",
+        transform: isFeatured ? "scale(1.05)" : "scale(1)",
+        transformOrigin: "center center",
       }}
     >
-      {/* Badge */}
-      {bc && (
-        <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 z-20 px-4 py-1 rounded-b-xl text-[8px] font-black uppercase tracking-[0.22em] whitespace-nowrap text-black"
-          style={{ background: bc.bg, boxShadow: `0 4px 14px ${bc.glow}` }}
-        >
-          {bc.label}
+      {/* Glow Hover Inject */}
+      <div 
+        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+        style={{
+          boxShadow: isFeatured ? "0 0 60px rgba(255,215,0,0.3)" : "none",
+          border: isFeatured ? "1px solid #FFD700" : "1px solid rgba(0,255,136,0.2)"
+        }}
+      />
+
+      {/* Featured badge - 🔥 MÁS POPULAR */}
+      {isFeatured && (
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 px-4 py-1 font-black text-[10px] uppercase tracking-widest text-black rounded-b-2xl z-20 bg-yellow-400 shadow-[0_0_20px_rgba(255,215,0,0.4)]">
+          🔥 MÁS POPULAR
         </div>
       )}
 
-      {/* Hover ambient glow */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300"
-        style={{ background: "radial-gradient(circle at 50% 0%, rgba(0,255,136,0.05) 0%, transparent 60%)" }} />
-
-      {/* Sparkline */}
-      <div className={featured ? "mt-5" : ""}>
-        <SparkLine />
+      {/* 1. HEADER */}
+      <div className="relative z-10 flex items-center justify-between mb-2 mt-2">
+        <h3 
+          className={`text-lg md:text-xl font-extrabold uppercase tracking-wider bg-clip-text text-transparent ${
+            isFeatured 
+              ? 'bg-gradient-to-r from-yellow-300 to-yellow-500 drop-shadow-[0_0_12px_rgba(255,215,0,0.5)]' 
+              : 'bg-gradient-to-r from-[#00FFB2] to-[#00D1FF] drop-shadow-[0_0_10px_rgba(0,255,178,0.3)]'
+          }`}
+        >
+          <span className="mr-2 inline-block filter-none drop-shadow-none text-white">{getPlanIcon(plan.name)}</span>
+          {plan.name}
+        </h3>
+        <div className="bg-green-500/10 text-green-400 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider border border-green-500/20">
+          ACTIVO
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="flex flex-col flex-1 gap-4 px-5 pb-5 pt-2">
-
-        {/* Name + status */}
-        <div className="flex items-center justify-between">
-          <h3 className="text-[12px] font-black uppercase tracking-[0.18em] text-green-400">{plan.name}</h3>
-          <span className="text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full"
-            style={{ background: "rgba(0,255,136,0.08)", border: "1px solid rgba(0,255,136,0.18)", color: "#00FF88" }}>
-            ACTIVO
-          </span>
+      {/* 2. BLOQUE PRINCIPAL: ROI en 24 horas y número grande */}
+      <div className="relative z-10 mb-6">
+        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">ROI en 24 horas</p>
+        <div className="flex items-end gap-2">
+          <span className="text-5xl font-black text-white">+{plan.roi}</span>
+          <span className="text-green-400 font-bold text-sm mb-1.5">diario</span>
         </div>
+      </div>
 
-        {/* Price */}
-        <div>
-          <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-gray-600 mb-1">Inversión</p>
-          <p className="text-3xl font-extrabold leading-none tracking-tight text-[#00FF88]">
-            $<span ref={invRef}>{invVal.toLocaleString()}</span>
-            <span className="text-xs font-normal text-gray-600 ml-1">USDT</span>
-          </p>
+      {/* 3. BLOQUE DE DATOS: bgcolor #111 */}
+      <div className="relative z-10 p-4 rounded-xl mb-6 bg-[#111] border border-white/5">
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-xs text-gray-400 font-bold uppercase">Inversión</span>
+          <span className="text-sm font-black text-white" ref={invRef}>${invVal.toLocaleString()} USDT</span>
         </div>
-
-        <div className="h-px w-full" style={{ background: "rgba(0,255,136,0.07)" }} />
-
-        {/* Returns */}
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between">
-            <span className="text-gray-500 text-xs">Ganancia neta</span>
-            <span className="text-green-400 text-xs font-black">
-              +$<span ref={profitRef}>{profitVal.toLocaleString()}</span> USDT
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-gray-500 text-xs">Total a recibir</span>
-            <span className="text-yellow-400 text-xs font-semibold">
-              $<span ref={totalRef}>{totalVal.toLocaleString()}</span> USDT
-            </span>
-          </div>
+        <div className="flex justify-between items-center">
+          <span className="text-xs text-gray-400 font-bold uppercase">Ganancia neta</span>
+          <span className="text-sm font-black text-green-400" ref={profitRef}>+${profitVal.toLocaleString()} USDT</span>
         </div>
+      </div>
 
-        <div className="h-px w-full" style={{ background: "rgba(255,255,255,0.04)" }} />
+      {/* 4. LISTA DE BENEFICIOS */}
+      <ul className="relative z-10 space-y-3 mb-8 flex-1">
+        {[
+          "Retiro automático en 24h",
+          "Verificación blockchain",
+          "Soporte 24/7",
+          "Red TRC20"
+        ].map((item, idx) => (
+          <li key={idx} className="flex items-center gap-3 text-sm text-gray-300">
+            <CheckCircle2 size={16} className={isFeatured ? "text-yellow-400" : "text-green-400"} />
+            {item}
+          </li>
+        ))}
+      </ul>
 
-        {/* Details */}
-        <ul className="space-y-1.5">
-          {[
-            { label: "ROI",          value: `${plan.roi} diario`,   cls: "text-white" },
-            { label: "Duración",     value: plan.duration,           cls: "text-white" },
-            { label: "Red",          value: "USDT TRC20",            cls: "text-white" },
-            { label: "Verificación", value: "Automática",            cls: "text-green-400" },
-          ].map(({ label, value, cls }) => (
-            <li key={label} className="flex items-center justify-between border-b border-white/5 pb-1.5 last:border-none last:pb-0">
-              <span className="text-gray-500 text-xs">{label}</span>
-              <span className={`text-xs font-bold ${cls}`}>{value}</span>
-            </li>
-          ))}
-        </ul>
-
-        {/* CTA */}
+      {/* 5. BOTÓN: Integrado */}
+      <div className="relative z-10">
         <a
           href={`${TELEGRAM_BOT_LINK}?start=plan_${plan.key}`}
-          className="mt-auto block w-full text-center py-2.5 rounded-xl text-black font-semibold text-[10px] uppercase tracking-widest transition-all duration-200 hover:brightness-110"
+          className="block w-full text-center py-4 rounded-xl font-black uppercase text-sm tracking-widest text-black transition-all duration-300 hover:opacity-90 hover:scale-[1.02]"
           style={{
-            background: "linear-gradient(90deg, #FFD700 0%, #FFC300 100%)",
-            boxShadow: "0 4px 16px rgba(255,215,0,0.18)",
-            textDecoration: "none",
+            background: isFeatured 
+              ? "linear-gradient(135deg, #FFD700 0%, #B8960C 100%)" 
+              : "linear-gradient(135deg, #FFD700 0%, #FFC300 100%)",
+            boxShadow: isFeatured ? "0 8px 30px rgba(255,215,0,0.3)" : "none"
           }}
-          onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 0 22px rgba(255,215,0,0.5)"}
-          onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 4px 16px rgba(255,215,0,0.18)"}
         >
           INVERTIR AHORA →
         </a>
       </div>
+
     </motion.div>
   );
 }
 
-// ─── Main export ──────────────────────────────────────────
+// ─── Main Grid Component ──────────────────────────────────
 export default function PlansGrid() {
   return (
-    <div className="relative min-h-screen bg-black overflow-x-hidden">
+    <div className="relative min-h-screen bg-[#020202] overflow-x-hidden selection:bg-yellow-400 selection:text-black">
+      
       <ParticleBackground />
 
-      {/* Subtle top glow */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[280px] rounded-full"
-          style={{ background: "radial-gradient(ellipse, rgba(0,255,136,0.07) 0%, transparent 70%)", filter: "blur(60px)" }} />
+      {/* Subtle Ambient Light */}
+      <div className="fixed inset-0 pointer-events-none z-0 flex justify-center">
+        <div className="w-[800px] h-[400px] rounded-full opacity-30 mt-[-100px]"
+             style={{ background: "radial-gradient(ellipse, rgba(0,255,136,0.06) 0%, transparent 70%)", filter: "blur(60px)" }} />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-28">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6 lg:px-8 pt-32 pb-16">
+        
+        {/* ── HEADER DE LA PÁGINA ── */}
+        <div className="flex flex-col items-center text-center mb-14 space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-green-500/20 bg-green-500/5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00FF88] animate-pulse" />
+            <span className="text-[9px] font-black uppercase tracking-widest text-[#00FF88]">
+              SISTEMA ACTIVO • ALPHATRADE CAPITAL
+            </span>
+          </div>
 
-        {/* Compact header */}
-        <div className="text-center mb-10">
-          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-green-400 mb-3">
-            Sistema activo · AlphaTrade Capital
-          </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-white uppercase tracking-tight">
-            Planes de <span className="text-green-400">Inversión</span>
+          <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight">
+            PLANES DE INVERSIÓN
           </h2>
-          <p className="text-gray-600 text-xs uppercase tracking-widest mt-2">
-            Ciclos automáticos 24h · Blockchain TRC20 · Retiro instantáneo
+
+          <p className="text-gray-400 text-sm font-medium tracking-wide">
+            Ciclos automáticos 24H · Blockchain TRC20 · Retiro instantáneo
           </p>
         </div>
 
-        {/* ── THE GRID ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+        {/* ── GRID DE CARDS ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
           {PLANS.map((plan, i) => (
             <PlanCard key={plan.key} plan={plan} index={i} />
           ))}
         </div>
 
-        {/* Footer */}
-        <div className="text-center mt-12">
-          <a
-            href={TELEGRAM_BOT_LINK}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all hover:scale-105"
-            style={{
-              background: "rgba(0,255,136,0.06)",
-              border: "1px solid rgba(0,255,136,0.2)",
-              color: "#00FF88",
-              textDecoration: "none",
-            }}
-          >
-            ¿Dudas? Soporte en Telegram →
-          </a>
-        </div>
       </div>
     </div>
   );
 }
+

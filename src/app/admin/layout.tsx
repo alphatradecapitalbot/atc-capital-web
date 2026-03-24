@@ -12,7 +12,8 @@ import {
   LogOut, 
   ChevronRight,
   Shield,
-  Zap
+  Zap,
+  Wallet
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -21,6 +22,7 @@ const ADMIN_NAV = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
   { name: 'Usuarios', href: '/admin/users', icon: Users },
   { name: 'Depósitos', href: '/admin/deposits', icon: CreditCard },
+  { name: 'Retiros', href: '/admin/withdrawals', icon: Wallet },
   { name: 'Inversiones', href: '/admin/investments', icon: TrendingUp },
   { name: 'Control Panel', href: '/admin/control', icon: Settings },
 ];

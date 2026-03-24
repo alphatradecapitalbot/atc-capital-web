@@ -9,8 +9,8 @@ import { SITE_SHORT, TELEGRAM_BOT_LINK, YOUTUBE_CHANNEL } from "@/lib/constants"
 
 const NAV_PUBLIC = [
   { href: "/#como-funciona", label: "Cómo Funciona" },
-  { href: "/#planes", label: "Planes" },
-  { href: "/games", label: "🎮 Juegos 🔥" },
+  { href: "/plans", label: "Planes" },
+  { href: "/earn", label: "💰 GANAR GRATIS" },
   { href: "/#seguridad", label: "Seguridad" },
   { href: "/reglas", label: "Reglas" },
   { href: "/#faq", label: "FAQ" },
@@ -20,7 +20,7 @@ const NAV_PUBLIC = [
 const NAV_AUTH = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/deposit", label: "Invertir" },
-  { href: "/games", label: "🎮 Juegos 🔥" },
+  { href: "/earn", label: "💰 GANAR GRATIS" },
   { href: "/withdraw", label: "Retiros" },
   { href: "/referral", label: "Referidos" },
   { href: "/support", label: "Soporte" },
@@ -30,7 +30,12 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const path = usePathname();
   const [open, setOpen] = useState(false);
-  const links = user ? NAV_AUTH : NAV_PUBLIC;
+  const links = (user ? NAV_AUTH : NAV_PUBLIC).map(link => {
+    if (link.label.includes("GANAR GRATIS")) {
+      return { ...link, href: user ? "/dashboard" : "/earn" };
+    }
+    return link;
+  });
 
   return (
     <nav className="fixed top-0 w-full z-50 px-4 py-4">
@@ -53,12 +58,29 @@ export default function Navbar() {
         <div className="hidden lg:flex items-center gap-10 relative z-10">
           {links.map(l => {
             const isActive = path === l.href;
-            const isGames = l.href === '/games';
+            const isEarn = l.href === '/earn';
+            
+            if (isEarn) {
+              return (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className={`px-3 py-1 rounded-lg font-bold transition-all ${
+                    isActive 
+                      ? 'bg-green-500/10 text-green-400 drop-shadow-[0_0_8px_rgba(0,255,150,0.5)]' 
+                      : 'bg-green-500/10 text-green-400 hover:text-green-300 hover:bg-green-500/20'
+                  }`}
+                >
+                  {l.label}
+                </Link>
+              );
+            }
+
             return (
               <Link
                 key={l.href}
                 href={l.href}
-                className={`nav-link ${isActive ? 'active' : ''} ${isGames ? 'animate-pulse-gold font-bold' : ''}`}
+                className={`nav-link ${isActive ? 'active' : ''}`}
               >
                 {l.label}
               </Link>
@@ -109,12 +131,30 @@ export default function Navbar() {
         <div className="lg:hidden glass mt-3 rounded-3xl px-8 py-6 space-y-4 mx-4 shadow-2xl animate-in fade-in slide-in-from-top-4 duration-300">
           {links.map(l => {
             const isActive = path === l.href;
-            const isGames = l.href === '/games';
+            const isEarn = l.href === '/earn';
+            
+            if (isEarn) {
+              return (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className={`block py-3 text-lg font-bold transition-all px-3 rounded-lg ${
+                    isActive 
+                      ? 'bg-green-500/10 text-green-400 drop-shadow-[0_0_8px_rgba(0,255,150,0.5)]' 
+                      : 'bg-green-500/10 text-green-400 hover:text-green-300 hover:bg-green-500/20'
+                  }`}
+                  onClick={() => setOpen(false)}
+                >
+                  {l.label}
+                </Link>
+              );
+            }
+
             return (
               <Link
                 key={l.href}
                 href={l.href}
-                className={`nav-link block py-3 text-lg ${isActive ? 'active' : ''} ${isGames ? 'animate-pulse-gold' : ''}`}
+                className={`nav-link block py-3 text-lg ${isActive ? 'active' : ''}`}
                 onClick={() => setOpen(false)}
               >
                 {l.label}

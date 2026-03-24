@@ -15,7 +15,9 @@ import {
   Plus,
   RefreshCw,
   CheckCircle2,
-  X
+  X,
+  TrendingUp,
+  DollarSign
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -268,6 +270,69 @@ export default function AdminControl() {
                 Cancelar
               </button>
             </div>
+          </div>
+        </motion.div>
+
+        {/* Ad System Settings (NEW) */}
+        <motion.div 
+          initial={{ opacity: 0, x: 20, y: 20 }}
+          animate={{ opacity: 1, x: 0, y: 0 }}
+          className="card p-8 border-white/5 bg-white/[0.01] space-y-8"
+        >
+          <div className="flex items-center gap-3 text-blue-400">
+            <TrendingUp className="w-6 h-6" />
+            <h2 className="text-xl font-black uppercase italic tracking-tight">Configuración de Anuncios</h2>
+          </div>
+
+          <p className="text-xs text-muted/60 leading-relaxed font-bold uppercase tracking-widest">
+            Controla las recompensas globales y límites de visualización para el sistema de anuncios.
+          </p>
+
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase text-muted/50 ml-1">Recompensa (USDT)</label>
+                <div className="relative">
+                   <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted/40" />
+                   <input 
+                    type="number" 
+                    step="0.0001"
+                    placeholder="0.004"
+                    className="w-full bg-white/5 border border-white/10 focus:border-blue-400/30 focus:ring-0 rounded-xl py-3 pl-12 text-sm text-white font-bold"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase text-muted/50 ml-1">Máximo Diario</label>
+                <div className="relative">
+                   <CheckCircle2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted/40" />
+                   <input 
+                    type="number" 
+                    placeholder="20"
+                    className="w-full bg-white/5 border border-white/10 focus:border-blue-400/30 focus:ring-0 rounded-xl py-3 pl-12 text-sm text-white font-bold"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase text-muted/50 ml-1">Cooldown de Sistema (Segundos)</label>
+              <div className="relative">
+                 <RefreshCw className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted/40" />
+                 <input 
+                  type="number" 
+                  placeholder="30"
+                  className="w-full bg-white/5 border border-white/10 focus:border-blue-400/30 focus:ring-0 rounded-xl py-3 pl-12 text-sm text-white font-bold"
+                />
+              </div>
+            </div>
+
+            <button 
+              onClick={() => sendAction('system/ads', { reward: 0.004, limit: 20, cooldown: 30 })}
+              className="w-full py-4 rounded-xl bg-blue-400 text-black text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] transition-all shadow-lg shadow-blue-400/20"
+            >
+              Guardar Cambios Globales
+            </button>
           </div>
         </motion.div>
 
