@@ -468,8 +468,8 @@ export default function Home() {
             </h1>
 
             <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-              Genera rendimientos automáticos en la red TRC20 con ciclos de 24 horas.
-              Seguridad total, transparencia absoluta y retiros instantáneos.
+              Genera rendimientos automáticos en la red TRC20 con ciclos de 24h.
+              Seguridad total, transparencia absoluta y retiros web3 instantáneos.
             </p>
 
             <div className="flex flex-wrap gap-4 justify-center">
