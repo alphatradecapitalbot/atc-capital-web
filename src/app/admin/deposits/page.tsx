@@ -19,8 +19,22 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+interface AdminDeposit {
+  id: number;
+  user_id: string;
+  telegram_id: string | number;
+  username: string | null;
+  first_name: string | null;
+  amount: any;
+  txid: string;
+  status: string;
+  reference: string;
+  plan: string;
+  created_at: string;
+}
+
 export default function AdminDeposits() {
-  const [deposits, setDeposits] = useState<any[]>([]);
+  const [deposits, setDeposits] = useState<AdminDeposit[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending');
 
@@ -30,11 +44,7 @@ export default function AdminDeposits() {
 
   const fetchDeposits = async () => {
     try {
-      const token = localStorage.getItem('atc_token');
-      const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const res = await fetch(`${api}/api/admin/deposits`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const res = await fetch('/api/admin/deposits');
       const data = await res.json();
       setDeposits(data.deposits || []);
     } catch (e) {
@@ -46,11 +56,11 @@ export default function AdminDeposits() {
 
   const handleAction = async (id: number, action: 'confirm' | 'reject') => {
     try {
-      const token = localStorage.getItem('atc_token');
-      const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const res = await fetch(`${api}/api/admin/deposits/${id}/${action}`, {
+      const apiAction = action === 'confirm' ? 'approveDeposit' : 'rejectDeposit';
+      const res = await fetch('/api/admin/action', {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: apiAction, depositId: id })
       });
       const data = await res.json();
       if (data.success) fetchDeposits();

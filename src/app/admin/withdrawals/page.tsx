@@ -14,8 +14,20 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+interface AdminWithdrawal {
+  id: number;
+  user_id: string;
+  telegram_id: string | number;
+  username: string | null;
+  first_name: string | null;
+  amount: number;
+  address: string;
+  status: string;
+  created_at: string;
+}
+
 export default function AdminWithdrawals() {
-  const [withdrawals, setWithdrawals] = useState<any[]>([]);
+  const [withdrawals, setWithdrawals] = useState<AdminWithdrawal[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all'|'pending'|'approved'|'rejected'>('pending');
 
@@ -26,11 +38,7 @@ export default function AdminWithdrawals() {
   const fetchWithdrawals = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('atc_token');
-      const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const res = await fetch(`${api}/api/admin/withdrawals`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const res = await fetch('/api/admin/withdrawals');
       const data = await res.json();
       setWithdrawals(data.withdrawals || []);
     } catch (e) {
@@ -42,15 +50,11 @@ export default function AdminWithdrawals() {
 
   const handleAction = async (id: number, status: 'approved' | 'rejected') => {
     try {
-      const token = localStorage.getItem('atc_token');
-      const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const res = await fetch(`${api}/api/admin/withdrawals/${id}`, {
+      const apiAction = status === 'approved' ? 'approveWithdrawal' : 'rejectWithdrawal';
+      const res = await fetch('/api/admin/action', {
         method: 'POST',
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json' 
-        },
-        body: JSON.stringify({ status })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: apiAction, withdrawalId: id })
       });
       if (res.ok) fetchWithdrawals();
     } catch (e) { console.error(e); }
@@ -123,7 +127,7 @@ export default function AdminWithdrawals() {
                     </div>
                   </td>
                   <td className="px-6 py-5">
-                    <p className="text-lg font-black text-white tracking-tight">${parseFloat(w.amount).toFixed(2)} <span className="text-[10px] text-muted">USDT</span></p>
+                    <p className="text-sm font-black text-white italic tracking-tighter">${Number(w.amount).toLocaleString()}</p><span className="text-[10px] text-muted">USDT</span>
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-2 group/addr cursor-pointer">

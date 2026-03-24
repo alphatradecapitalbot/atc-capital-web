@@ -54,17 +54,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     
     const checkNewEvents = async () => {
       try {
-        const token = localStorage.getItem('atc_token');
-        const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-        const res = await fetch(`${api}/api/admin/deposits`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await res.json();
-        const all = data.deposits || [];
+        const { createClient } = await import('@/utils/supabase/client');
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from('deposits')
+          .select('status, amount')
+          .order('created_at', { ascending: false })
+          .limit(50);
+
+        if (error) throw error;
+        const all = data || [];
         
-        const pending = all.filter((d: any) => d.status === 'pending');
-        const approved = all.filter((d: any) => d.status === 'approved');
-        const rejected = all.filter((d: any) => d.status === 'rejected');
+        const pending = all.filter(d => d.status === 'pending');
+        const approved = all.filter(d => d.status === 'approved');
+        const rejected = all.filter(d => d.status === 'rejected');
         
         if (pending.length > pendingCount && pendingCount !== 0) {
           setAlert(`🔔 Nuevo depósito pendiente: $${pending[0].amount}`);

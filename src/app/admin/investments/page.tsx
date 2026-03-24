@@ -19,8 +19,23 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+interface AdminInvestment {
+  id: number;
+  user_id: string;
+  telegram_id?: string | number;
+  first_name: string | null;
+  username: string | null;
+  plan: string;
+  amount: any;
+  profit: any;
+  status: string;
+  created_at: string;
+  expires_at: string;
+  type: 'deposit' | 'reinvestment' | 'manual';
+}
+
 export default function AdminInvestments() {
-  const [investments, setInvestments] = useState<any[]>([]);
+  const [investments, setInvestments] = useState<AdminInvestment[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'all' | 'deposit' | 'reinvestment' | 'manual'>('all');
@@ -31,11 +46,7 @@ export default function AdminInvestments() {
 
   const fetchInvestments = async () => {
     try {
-      const token = localStorage.getItem('atc_token');
-      const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const res = await fetch(`${api}/api/admin/investments`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const res = await fetch('/api/admin/investments');
       const data = await res.json();
       setInvestments(data.investments || []);
     } catch (e) {
@@ -48,11 +59,10 @@ export default function AdminInvestments() {
   const forcePayout = async (id: number) => {
     if (!confirm('¿Forzar pago inmediato? Se acreditará capital + ganancia al usuario.')) return;
     try {
-      const token = localStorage.getItem('atc_token');
-      const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      await fetch(`${api}/api/admin/investments/${id}/payout`, {
+      await fetch('/api/admin/action', {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'forcePayout', investmentId: id })
       });
       fetchInvestments();
     } catch (e) { console.error(e); }
@@ -61,11 +71,10 @@ export default function AdminInvestments() {
   const deleteInvestment = async (id: number) => {
     if (!confirm('¿Eliminar inversión? No se devolverán fondos.')) return;
     try {
-      const token = localStorage.getItem('atc_token');
-      const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      await fetch(`${api}/api/admin/investments/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
+      await fetch('/api/admin/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'deleteInvestment', investmentId: id })
       });
       fetchInvestments();
     } catch (e) { console.error(e); }

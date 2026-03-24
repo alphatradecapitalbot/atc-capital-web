@@ -1,15 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServiceClient } from "@/lib/supabase";
+import { createClient } from "@/utils/supabase/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { user_id, telegram_id, amount, txid, plan } = await req.json();
+    const supabase = await createClient();
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+
+    if (!authUser) {
+      return NextResponse.json({ error: "No autorizado." }, { status: 401 });
+    }
+
+    const { amount, txid, plan } = await req.json();
 
     if (!txid || txid.length < 10) {
       return NextResponse.json({ error: "TXID inválido." }, { status: 400 });
     }
 
-    const supabase = createServiceClient();
+    // Fetch DB user record
+    const { data: userData } = await supabase
+      .from('users')
+      .select('id')
+      .or(`supabase_id.eq.${authUser.id},email.eq.${authUser.email}`)
+      .single();
+
+    if (!userData) {
+      return NextResponse.json({ error: "Usuario no encontrado en base de datos." }, { status: 404 });
+    }
 
     // Check for duplicate TXID
     const { data: existing } = await supabase
@@ -26,7 +42,7 @@ export async function POST(req: NextRequest) {
     const { data: deposit, error } = await supabase
       .from("deposits")
       .insert({
-        user_id,
+        user_id: userData.id,
         amount,
         txid,
         status: "pending",
@@ -35,6 +51,7 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (error) {
+       console.error("Deposit insert error:", error);
       return NextResponse.json({ error: "Error al registrar depósito." }, { status: 500 });
     }
 
@@ -45,7 +62,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const supabase = createServiceClient();
+  const supabase = await createClient();
   const { data } = await supabase
     .from("deposits")
     .select("*, users(telegram_id, username, first_name)")

@@ -18,11 +18,27 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+interface AdminUser {
+  id: string;
+  telegram_id: string;
+  username: string | null;
+  first_name: string | null;
+  balance: number;
+  game_balance: any;
+  investment_balance: any;
+  total_invested: any;
+  total_withdrawn: any;
+  active_investments: number;
+  status: string;
+  created_at: string;
+  is_admin: boolean;
+}
+
 export default function AdminUsers() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [editingUser, setEditingUser] = useState<any>(null);
+  const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
   const [newBalance, setNewBalance] = useState('');
   const [balanceAction, setBalanceAction] = useState<'set' | 'add' | 'sub'>('set');
 
@@ -32,11 +48,7 @@ export default function AdminUsers() {
 
   const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem('atc_token');
-      const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const res = await fetch(`${api}/api/admin/users`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const res = await fetch('/api/admin/users');
       const data = await res.json();
       setUsers(data.users || []);
     } catch (e) {
@@ -49,15 +61,10 @@ export default function AdminUsers() {
   const toggleBlock = async (user: any) => {
     const newStatus = user.status === 'active' ? 'blocked' : 'active';
     try {
-      const token = localStorage.getItem('atc_token');
-      const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      await fetch(`${api}/api/admin/users/${user.id}/block`, {
+      await fetch('/api/admin/action', {
         method: 'POST',
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ status: newStatus })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'toggleBlock', userId: user.id, status: newStatus })
       });
       fetchUsers();
     } catch (e) { console.error(e); }
@@ -66,15 +73,15 @@ export default function AdminUsers() {
   const handleUpdateBalance = async () => {
     if (!editingUser || !newBalance) return;
     try {
-      const token = localStorage.getItem('atc_token');
-      const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      await fetch(`${api}/api/admin/users/${editingUser.id}/balance`, {
+      await fetch('/api/admin/action', {
         method: 'POST',
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ amount: parseFloat(newBalance), action: balanceAction })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          action: 'updateBalance', 
+          userId: editingUser.id, 
+          amount: parseFloat(newBalance), 
+          type: balanceAction 
+        })
       });
       setEditingUser(null);
       setNewBalance('');

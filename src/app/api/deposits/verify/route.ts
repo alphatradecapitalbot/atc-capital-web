@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServiceClient } from "@/lib/supabase";
+import { createClient } from "@/utils/supabase/server";
 import { verifyTRC20Transaction, isValidTxid } from "@/lib/verifyTRC20";
 import { PLANS } from "@/lib/constants";
 
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     }
 
     const expectedAmount = amount || plan.investment;
-    const supabase = createServiceClient();
+    const supabase = await createClient();
 
     // 2. Check duplicate TXID
     const { data: existingDeposit } = await supabase
@@ -64,6 +64,7 @@ export async function POST(req: NextRequest) {
         .single();
 
       if (depositError) {
+        console.error("Deposit insert error:", depositError);
         return NextResponse.json({ error: "Error al registrar depósito." }, { status: 500 });
       }
       depositId = newDeposit.id;
@@ -86,7 +87,7 @@ export async function POST(req: NextRequest) {
     const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
     // Run all DB updates in a batch
-    const [depositUpdate, investmentInsert, userUpdate] = await Promise.all([
+    const [depositUpdate, investmentInsert] = await Promise.all([
       // Mark deposit approved
       supabase
         .from("deposits")
@@ -106,23 +107,16 @@ export async function POST(req: NextRequest) {
         })
         .select()
         .single(),
-
-      // Update user stats
-      supabase
-        .from("users")
-        .update({
-          total_invested: supabase.rpc as any, // will use .increment below
-        })
-        .eq("id", user_id),
     ]);
 
-    // Increment total_invested separately (Supabase doesn't have simple increment in batch)
+    // Increment total_invested separately
     const { error: rpcError } = await supabase.rpc("increment_user_stats", {
       p_user_id: user_id,
       p_invested: verification.txData!.amount,
     });
 
     if (rpcError) {
+      console.error("RPC Error:", rpcError);
       // Fallback if RPC doesn't exist: manual update
       const { data } = await supabase
         .from("users")

@@ -2,6 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { createClient } from '@/utils/supabase/client';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface User {
   id: number;
@@ -9,7 +11,7 @@ interface User {
   email?: string;
   username?: string;
   first_name?: string;
-  balance?: number; // Legacy
+  balance?: number;
   game_balance?: number;
   investment_balance?: number;
   total_invested?: number;
@@ -19,10 +21,11 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
+  supabaseUser: SupabaseUser | null;
   loading: boolean;
-  login: (token: string, user: User) => void;
-  logout: () => void;
+  signIn: (email: string, pass: string) => Promise<{ error: any }>;
+  signUp: (email: string, pass: string, metadata: any) => Promise<{ error: any; data: any }>;
+  logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
@@ -30,70 +33,73 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const supabase = createClient();
 
   useEffect(() => {
-    const savedToken = localStorage.getItem('atc_token');
-    const savedUser = localStorage.getItem('atc_user');
-    
-    if (savedToken && savedUser) {
-      setToken(savedToken);
-      const parsedUser = JSON.parse(savedUser);
-      setUser(parsedUser);
-      
-      // Optionally verify token with backend
-      fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/me`, {
-        headers: { 'Authorization': `Bearer ${savedToken}` }
-      }).then(res => {
-        if (!res.ok) logout();
-        else return res.json();
-      }).then(data => {
-        if (data?.user) {
-          setUser(data.user);
-          localStorage.setItem('atc_user', JSON.stringify(data.user));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session) {
+          setSupabaseUser(session.user);
+          await fetchUserData(session.user.id);
+        } else {
+          setSupabaseUser(null);
+          setUser(null);
         }
-      }).catch(() => {});
-    }
-    setLoading(false);
+        setLoading(false);
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const login = (newToken: string, newUser: User) => {
-    setToken(newToken);
-    setUser(newUser);
-    localStorage.setItem('atc_token', newToken);
-    localStorage.setItem('atc_user', JSON.stringify(newUser));
-    router.push('/dashboard');
-  };
-
-  const refreshUser = async () => {
-    const savedToken = localStorage.getItem('atc_token');
-    if (!savedToken) return;
+  const fetchUserData = async (supabaseId: string) => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/me`, {
-        headers: { 'Authorization': `Bearer ${savedToken}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.user) {
-          setUser(data.user);
-          localStorage.setItem('atc_user', JSON.stringify(data.user));
-        }
+      // Try fetching by supabase_id (preferred) or email
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .or(`supabase_id.eq.${supabaseId},email.eq.${supabaseUser?.email}`)
+        .single();
+
+      if (data) {
+        setUser(data);
       }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error("Error fetching user data:", e);
+    }
   };
 
-  const logout = () => {
-    setToken(null);
-    setUser(null);
-    localStorage.removeItem('atc_token');
-    localStorage.removeItem('atc_user');
+  const signIn = async (email: string, pass: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+    if (!error) router.push('/dashboard');
+    return { error };
+  };
+
+  const signUp = async (email: string, pass: string, metadata: any) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password: pass,
+      options: { data: metadata }
+    });
+    return { data, error };
+  };
+
+  const logout = async () => {
+    await supabase.auth.signOut();
     router.push('/login');
   };
 
+  const refreshUser = async () => {
+    if (supabaseUser) await fetchUserData(supabaseUser.id);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, supabaseUser, loading, signIn, signUp, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

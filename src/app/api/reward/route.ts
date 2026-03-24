@@ -1,46 +1,28 @@
-import { NextResponse } from 'next/response';
-import { supabase } from '@/lib/supabase';
-
-// Helper to get authenticated user
-async function getAuthUser(request: Request) {
-  const authHeader = request.headers.get('Authorization');
-  if (!authHeader) return null;
-
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-    const res = await fetch(`${apiUrl}/api/auth/me`, {
-      headers: { 'Authorization': authHeader }
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.user || null;
-  } catch (err) {
-    console.error("Auth fetch error:", err);
-    return null;
-  }
-}
+import { NextResponse } from 'next/server';
+import { createClient } from '@/utils/supabase/server';
 
 export async function POST(request: Request) {
   try {
-    const user = await getAuthUser(request);
+    const supabase = await createClient();
+    const { data: { user: authUser } } = await supabase.auth.getUser();
     
-    if (!user || (!user.id && !user.telegram_id)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!authUser) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
-
-    const userId = user.id;
 
     // Fetch up-to-date user data from Supabase
     const { data: userData, error: fetchErr } = await supabase
       .from('users')
-      .select('balance, adsWatched, adsToday, lastAdAt')
-      .eq('id', userId)
+      .select('id, balance, adsWatched, adsToday, lastAdAt')
+      .or(`supabase_id.eq.${authUser.id},email.eq.${authUser.email}`)
       .single();
 
     if (fetchErr || !userData) {
       console.error("Fetch Error:", fetchErr);
       return NextResponse.json({ error: 'User not found in DB' }, { status: 404 });
     }
+
+    const userId = userData.id;
 
     // Check limits
     const now = new Date();

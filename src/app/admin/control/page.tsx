@@ -35,15 +35,15 @@ export default function AdminControl() {
     setError('');
     setSuccess('');
     try {
-      const token = localStorage.getItem('atc_token');
-      const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const res = await fetch(`${api}/api/admin/${endpoint}`, {
+      let actionName = endpoint;
+      if (endpoint.includes('balance')) actionName = 'updateBalance';
+      if (endpoint === 'investments/manual') actionName = 'manualInvest';
+      if (endpoint === 'system/ads') actionName = 'updateAds';
+
+      const res = await fetch('/api/admin/action', {
         method: 'POST',
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...body, action: actionName })
       });
       const data = await res.json();
       if (data.success) setSuccess('Acción completada con éxito');
@@ -57,12 +57,12 @@ export default function AdminControl() {
 
   const handleManualInvest = () => {
     if (!userId || !planKey) return;
-    sendAction('investments/manual', { userId: parseInt(userId), plan: planKey, amount: parseFloat(amount) || undefined });
+    sendAction('investments/manual', { userId, plan: planKey, amount: parseFloat(amount) || undefined });
   };
 
   const handleAdjustBalance = (action: 'add' | 'sub' | 'set') => {
     if (!userId || !amount) return;
-    sendAction(`users/${userId}/balance`, { amount: parseFloat(amount), operation: action });
+    sendAction(`users/balance`, { userId, amount: parseFloat(amount), type: action });
   };
 
   const handleInvAction = async (action: 'payout' | 'delete') => {
@@ -71,14 +71,14 @@ export default function AdminControl() {
     
     setLoading(true);
     try {
-      const token = localStorage.getItem('atc_token');
-      const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const method = action === 'delete' ? 'DELETE' : 'POST';
-      const url = action === 'delete' ? `${api}/api/admin/investments/${invId}` : `${api}/api/admin/investments/${invId}/payout`;
-      
-      const res = await fetch(url, { method, headers: { 'Authorization': `Bearer ${token}` } });
+      const apiAction = action === 'delete' ? 'deleteInvestment' : 'forcePayout';
+      const res = await fetch('/api/admin/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: apiAction, investmentId: invId })
+      });
       const data = await res.json();
-      if (data.success || data.msg) setSuccess('Acción completada');
+      if (data.success) setSuccess('Acción completada');
       else setError(data.error || 'Error en la acción');
     } catch (e: any) { setError(e.message); }
     finally { setLoading(false); }

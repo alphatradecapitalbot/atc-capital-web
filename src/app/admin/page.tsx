@@ -5,7 +5,7 @@ import {
   TrendingUp, 
   Users, 
   CreditCard, 
-  BarChart3, 
+  BarChart, 
   Activity, 
   ArrowUpRight, 
   ArrowDownRight,
@@ -16,7 +16,18 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-function AdminStatCard({ label, value, sub, icon: Icon, color, bg, delay, prefix = "$" }: any) {
+interface AdminStatCardProps {
+  label: string;
+  value: string | number;
+  sub: string;
+  icon: any; // Keep icon as any but it's common for lucide components if not imported specifically
+  color: string;
+  bg: string;
+  delay: number;
+  prefix?: string;
+}
+
+function AdminStatCard({ label, value, sub, icon: Icon, color, bg, delay, prefix = "$" }: AdminStatCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -50,11 +61,7 @@ export default function AdminDashboard() {
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('atc_token');
-      const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const res = await fetch(`${api}/api/admin/stats`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const res = await fetch('/api/admin/stats');
       const data = await res.json();
       setStats(data);
     } catch (e) {

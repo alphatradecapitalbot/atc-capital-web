@@ -1,20 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServiceClient } from "@/lib/supabase";
+import { createClient } from "@/utils/supabase/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { user_id, amount, wallet, mode } = await req.json();
+    const supabase = await createClient();
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+
+    if (!authUser) {
+      return NextResponse.json({ error: "No autorizado." }, { status: 401 });
+    }
+
+    const { amount, wallet, mode } = await req.json();
 
     if (!amount || amount <= 0) {
       return NextResponse.json({ error: "Monto inválido." }, { status: 400 });
     }
 
-    const supabase = createServiceClient();
+    // Fetch DB user record
+    const { data: userData } = await supabase
+      .from('users')
+      .select('id')
+      .or(`supabase_id.eq.${authUser.id},email.eq.${authUser.email}`)
+      .single();
+
+    if (!userData) {
+      return NextResponse.json({ error: "Usuario no encontrado en base de datos." }, { status: 404 });
+    }
 
     const { data: withdrawal, error } = await supabase
       .from("withdrawals")
       .insert({
-        user_id,
+        user_id: userData.id,
         amount,
         wallet: wallet || "REINVESTMENT",
         status: "pending",
@@ -23,6 +39,7 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (error) {
+       console.error("Withdrawal insert error:", error);
       return NextResponse.json({ error: "Error al registrar solicitud." }, { status: 500 });
     }
 
@@ -33,7 +50,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
-  const supabase = createServiceClient();
+  const supabase = await createClient();
   const { data } = await supabase
     .from("withdrawals")
     .select("*, users(telegram_id, username, first_name)")

@@ -61,7 +61,7 @@ function SocialProofFeed() {
 }
 
 export default function DashboardClient() {
-  const { user, token, refreshUser, loading } = useAuth();
+  const { user, refreshUser, loading } = useAuth();
   const router = useRouter();
   
   // States
@@ -109,7 +109,7 @@ export default function DashboardClient() {
   }, [cooldownTime, isWatching]);
 
   const handleStartWatch = () => {
-    if (!user || user.id === undefined) {
+    if (!user) {
       showNotification("Inicia sesión para ganar", "error");
       return;
     }
@@ -131,8 +131,7 @@ export default function DashboardClient() {
 
     try {
       const res = await fetch("/api/reward", {
-        method: "POST",
-        headers: { "Authorization": `Bearer ${token}` }
+        method: "POST"
       });
       
       const data = await res.json();
