@@ -15,6 +15,7 @@ import {
   SITE_NAME, SITE_SHORT
 } from "@/lib/constants";
 import Link from "next/link";
+import Counter from "@/components/Counter";
 
 // ─── Live Stats (simulated realistic counters) ───────────────────
 function useLiveCounter(base: number, variance: number, interval = 8000) {
@@ -308,9 +309,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
             {[
-              { icon: Users, label: "Usuarios Inviertiendo", val: activeUsers.toLocaleString(), color: "text-blue-400" },
-              { icon: DollarSign, label: "USDT Pagados a Miembros", val: `${totalPaid.toLocaleString()}`, color: "text-gold" },
-              { icon: Activity, label: "Operaciones Exitosas Hoy", val: todayDeposit.toLocaleString(), color: "text-profit" },
+              { icon: Users, label: "Usuarios Inviertiendo", val: <Counter value={activeUsers} />, color: "text-blue-400" },
+              { icon: DollarSign, label: "USDT Pagados a Miembros", val: <Counter value={totalPaid} />, color: "text-gold" },
+              { icon: Activity, label: "Operaciones Exitosas Hoy", val: <Counter value={todayDeposit} />, color: "text-profit" },
             ].map((s, i) => (
               <motion.div 
                 key={i} 
