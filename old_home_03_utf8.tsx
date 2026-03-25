@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -16,7 +16,7 @@ import {
 } from "@/lib/constants";
 import Link from "next/link";
 
-// ─── Live Stats (simulated realistic counters) ───────────────────
+// ÔöÇÔöÇÔöÇ Live Stats (simulated realistic counters) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 function useLiveCounter(base: number, variance: number, interval = 8000) {
   const [val, setVal] = useState(base);
   useEffect(() => {
@@ -26,14 +26,14 @@ function useLiveCounter(base: number, variance: number, interval = 8000) {
   return val;
 }
 
-// ─── FAQ Accordion ────────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇ FAQ Accordion ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 const FAQS = [
-  { q: "¿Cuánto tarda en activarse mi inversión?", a: "La verificación blockchain es automática. En menos de 2 minutos desde enviar tu TXID, el sistema valida la transacción y activa tu plan." },
-  { q: "¿Puedo retirar mis ganancias en cualquier momento?", a: "Sí. Una vez completado el ciclo de 24 horas, tu balance está disponible para retiro o reinversión inmediata." },
-  { q: "¿Qué pasa si envío el monto incorrecto?", a: "El sistema rechazará automáticamente la transacción por no coincidir con el plan seleccionado. Deberás enviar el monto exacto según el plan." },
-  { q: "¿El sistema es completamente automático?", a: "Sí. La verificación, activación y pago de ganancias son 100% automáticos mediante blockchain y sin intervención humana." },
-  { q: "¿Solo se acepta la red TRON (TRC20)?", a: "Sí, únicamente USDT en la red TRON (TRC20). No aceptamos BEP20, ERC20 ni ninguna otra red." },
-  { q: "¿Cómo funciona el sistema de referidos?", a: "Al invitar a otras personas con tu enlace único, recibes una comisión de 0.30 USDT por cada inversión aprobada de tus referidos." },
+  { q: "┬┐Cu├ínto tarda en activarse mi inversi├│n?", a: "La verificaci├│n blockchain es autom├ítica. En menos de 2 minutos desde enviar tu TXID, el sistema valida la transacci├│n y activa tu plan." },
+  { q: "┬┐Puedo retirar mis ganancias en cualquier momento?", a: "S├¡. Una vez completado el ciclo de 24 horas, tu balance est├í disponible para retiro o reinversi├│n inmediata." },
+  { q: "┬┐Qu├® pasa si env├¡o el monto incorrecto?", a: "El sistema rechazar├í autom├íticamente la transacci├│n por no coincidir con el plan seleccionado. Deber├ís enviar el monto exacto seg├║n el plan." },
+  { q: "┬┐El sistema es completamente autom├ítico?", a: "S├¡. La verificaci├│n, activaci├│n y pago de ganancias son 100% autom├íticos mediante blockchain y sin intervenci├│n humana." },
+  { q: "┬┐Solo se acepta la red TRON (TRC20)?", a: "S├¡, ├║nicamente USDT en la red TRON (TRC20). No aceptamos BEP20, ERC20 ni ninguna otra red." },
+  { q: "┬┐C├│mo funciona el sistema de referidos?", a: "Al invitar a otras personas con tu enlace ├║nico, recibes una comisi├│n de 0.30 USDT por cada inversi├│n aprobada de tus referidos." },
 ];
 
 function FAQItem({ q, a }: { q: string; a: string }) {
@@ -64,7 +64,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
   );
 }
 
-// ─── Section Header ───────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇ Section Header ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 function SectionHeader({ label, title, sub }: { label: string; title: string; sub?: string }) {
   return (
     <div className="text-center space-y-4 mb-16">
@@ -78,20 +78,20 @@ function SectionHeader({ label, title, sub }: { label: string; title: string; su
   );
 }
 
-// ─── Games Section ────────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇ Games Section ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 function GamesSection() {
   const games = [
     {
       id: 'reward-box',
-      name: '🎁 REWARD BOX',
-      desc: 'Abre cajas misteriosas y gana hasta x3 tu inversión.',
+      name: '­ƒÄü REWARD BOX',
+      desc: 'Abre cajas misteriosas y gana hasta x3 tu inversi├│n.',
       icon: Gift,
       color: 'from-yellow-400/20 to-transparent',
       shadow: 'shadow-yellow-400/10'
     },
     {
       id: 'market-spin',
-      name: '🎯 MARKET SPIN',
+      name: '­ƒÄ» MARKET SPIN',
       desc: 'Elige un color y multiplica tu dinero al instante.',
       icon: PieChart,
       color: 'from-profit/20 to-transparent',
@@ -99,7 +99,7 @@ function GamesSection() {
     },
     {
       id: 'price-prediction',
-      name: '📈 PRICE PREDICTION',
+      name: '­ƒôê PRICE PREDICTION',
       desc: 'Predice si el mercado sube o baja y gana en segundos.',
       icon: TrendingUp,
       color: 'from-blue-500/20 to-transparent',
@@ -115,9 +115,9 @@ function GamesSection() {
 
        <div className="max-w-7xl mx-auto px-6 relative z-10">
           <SectionHeader 
-            label="Diversión y Ganancias" 
-            title="🎮 GANA MÁS CON NUESTROS JUEGOS" 
-            sub="Multiplica tu inversión en segundos con nuestros juegos interactivos en tiempo real." 
+            label="Diversi├│n y Ganancias" 
+            title="­ƒÄ« GANA M├üS CON NUESTROS JUEGOS" 
+            sub="Multiplica tu inversi├│n en segundos con nuestros juegos interactivos en tiempo real." 
           />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
@@ -143,7 +143,7 @@ function GamesSection() {
                         href={`/games/${g.id}`}
                         className="inline-flex items-center gap-2 text-gold text-[10px] font-black uppercase tracking-[0.3em] group-hover:gap-4 transition-all"
                       >
-                         👉 JUGAR AHORA
+                         ­ƒæë JUGAR AHORA
                       </Link>
                    </div>
                 </motion.div>
@@ -153,15 +153,15 @@ function GamesSection() {
           {/* Conversion Footer */}
           <div className="flex flex-wrap justify-center items-center gap-10 py-10 border-t border-white/5">
              <div className="flex items-center gap-3">
-                <span className="text-2xl">🔥</span>
+                <span className="text-2xl">­ƒöÑ</span>
                 <span className="text-sm font-black text-white italic uppercase tracking-tighter">+1,200 usuarios ganando ahora mismo</span>
              </div>
              <div className="flex items-center gap-3">
-                <span className="text-2xl">💰</span>
+                <span className="text-2xl">­ƒÆ░</span>
                 <span className="text-sm font-black text-white italic uppercase tracking-tighter">Retornos en tiempo real</span>
              </div>
              <div className="flex items-center gap-3">
-                <span className="text-2xl">⚡</span>
+                <span className="text-2xl">ÔÜí</span>
                 <span className="text-sm font-black text-white italic uppercase tracking-tighter">Resultados en segundos</span>
              </div>
           </div>
@@ -170,7 +170,7 @@ function GamesSection() {
   );
 }
 
-// ─── Main Page ────────────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇ Main Page ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 export default function Home() {
   const { user } = useAuth();
   const router = useRouter();
@@ -205,7 +205,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[#0a0a0a] text-white selection:bg-gold selection:text-black overflow-x-hidden">
 
-      {/* ════════════════════════ HERO ════════════════════════ */}
+      {/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ HERO ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */}
       <section className="relative min-h-[90vh] flex items-center pt-32 pb-20">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-gold/5 blur-[120px] rounded-full" />
@@ -218,17 +218,17 @@ export default function Home() {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="space-y-8">
               <div className="inline-flex items-center gap-2 bg-yellow-400/10 border border-yellow-400/20 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-gold">
                 <span className="w-1.5 h-1.5 rounded-full bg-profit animate-pulse" />
-                Sistema Activo · Verificación Blockchain
+                Sistema Activo ┬À Verificaci├│n Blockchain
               </div>
 
               <h1 className="text-5xl md:text-7xl font-black uppercase italic leading-[0.9] tracking-tighter">
                 Invierte en USDT y genera{" "}
-                <span className="text-gold">ingresos automáticos</span>{" "}
+                <span className="text-gold">ingresos autom├íticos</span>{" "}
                 con {SITE_SHORT}
               </h1>
 
               <p className="text-lg text-muted leading-relaxed max-w-xl">
-                Plataforma automatizada de inversión con verificación blockchain en tiempo real y rendimientos garantizados cada 24 horas.
+                Plataforma automatizada de inversi├│n con verificaci├│n blockchain en tiempo real y rendimientos garantizados cada 24 horas.
               </p>
 
               <div className="flex flex-wrap gap-4 pt-4">
@@ -239,12 +239,12 @@ export default function Home() {
                   EMPEZAR AHORA
                 </Link>
                 <a href="#planes" className="bg-white/5 hover:bg-white/10 border border-white/10 px-10 py-5 rounded-2xl text-lg font-black uppercase tracking-wider transition-all">
-                  VER PLANES →
+                  VER PLANES ÔåÆ
                 </a>
               </div>
             </motion.div>
 
-            {/* RIGHT — floating card */}
+            {/* RIGHT ÔÇö floating card */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -293,7 +293,7 @@ export default function Home() {
                       OPERACIONAL
                     </div>
                     <div className="text-[10px] text-muted font-black uppercase tracking-[0.2em]">
-                      TRC20 · SECURE
+                      TRC20 ┬À SECURE
                     </div>
                   </div>
                 </div>
@@ -303,7 +303,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════════════════════════ STATS (Standalone) ════════════════════════ */}
+      {/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ STATS (Standalone) ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */}
       <section className="py-20 border-y border-white/5 bg-white/[0.01] relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
@@ -334,15 +334,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════════════════════════ PLANES ════════════════════════ */}
+      {/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ PLANES ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */}
       <section id="planes" className="py-32 relative">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold/5 blur-[150px] rounded-full pointer-events-none" />
         
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <SectionHeader 
-            label="Inversión" 
-            title="🎯 PLANES DE ALTO RENDIMIENTO" 
-            sub="Capital de trabajo + ganancia garantizada procesada automáticamente en 24 horas." 
+            label="Inversi├│n" 
+            title="­ƒÄ» PLANES DE ALTO RENDIMIENTO" 
+            sub="Capital de trabajo + ganancia garantizada procesada autom├íticamente en 24 horas." 
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -389,9 +389,9 @@ export default function Home() {
                   <div className="space-y-4 mb-10 text-sm">
                     {[
                       ["ROI TOTAL", plan.roi],
-                      ["DURACIÓN", "24 HORAS"],
+                      ["DURACI├ôN", "24 HORAS"],
                       ["RED NATIVA", "TRON (TRC20)"],
-                      ["PAGO", "AUTOMÁTICO"],
+                      ["PAGO", "AUTOM├üTICO"],
                     ].map(([k, v], j) => (
                       <div key={j} className="flex justify-between items-center py-3 border-t border-white/5">
                         <span className="text-[10px] font-bold text-muted uppercase tracking-widest">{k}</span>
@@ -414,7 +414,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════════════════════════ CTA / GET STARTED ════════════════════════ */}
+      {/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ CTA / GET STARTED ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */}
       <section className="py-32 relative overflow-hidden">
         <div className="max-w-5xl mx-auto px-6 relative z-10">
           <motion.div 
@@ -429,10 +429,10 @@ export default function Home() {
              <div className="absolute bottom-0 left-0 w-64 h-64 bg-profit/10 blur-[100px] rounded-full" />
 
              <h2 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter leading-none">
-               ¿LISTO PARA TU PRIMERA <span className="text-gold">GANANCIA?</span>
+               ┬┐LISTO PARA TU PRIMERA <span className="text-gold">GANANCIA?</span>
              </h2>
              <p className="text-muted text-lg max-w-2xl mx-auto font-medium">
-               Únete a los miles de inversores que ya están generando USDT de forma pasiva y segura mediante nuestra infraestructura blockchain avanzada.
+               ├Ünete a los miles de inversores que ya est├ín generando USDT de forma pasiva y segura mediante nuestra infraestructura blockchain avanzada.
              </p>
              <div className="flex flex-col sm:flex-row justify-center gap-6 pt-6">
                 <Link href="/login" className="bg-gold hover:bg-yellow-300 text-black px-12 py-6 rounded-2xl text-xl font-black uppercase tracking-widest transition-all shadow-2xl shadow-gold/30">
@@ -450,19 +450,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════════════════════════ EXTRA CONTENT SECTIONS ════════════════════════ */}
+      {/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ EXTRA CONTENT SECTIONS ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */}
       <GamesSection />
 
       <section id="como-funciona" className="py-32 border-t border-white/5 bg-white/[0.01]">
         <div className="max-w-7xl mx-auto px-6">
-          <SectionHeader label="Proceso" title="¿Cómo Funciona?" sub="En 6 pasos simples, tu inversión estará activa y generando rendimientos." />
+          <SectionHeader label="Proceso" title="┬┐C├│mo Funciona?" sub="En 6 pasos simples, tu inversi├│n estar├í activa y generando rendimientos." />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { n: "01", icon: TrendingUp, title: "Elige tu Plan", desc: "Selecciona el monto que deseas invertir según nuestras opciones disponibles." },
-              { n: "02", icon: DollarSign, title: "Envía USDT", desc: "Transfiere a nuestra wallet oficial en la red TRON (TRC20) únicamente." },
-              { n: "03", icon: Activity, title: "Envía el TXID", desc: "El bot validará tu hash de transacción directamente en el explorador." },
-              { n: "04", icon: ShieldCheck, title: "Verificación", desc: "El sistema valida la Red, el Monto y el Destinatario automáticamente." },
-              { n: "05", icon: Zap, title: "Activación", desc: "Tu inversión se marca como ACTIVA al instante tras la confirmación." },
+              { n: "01", icon: TrendingUp, title: "Elige tu Plan", desc: "Selecciona el monto que deseas invertir seg├║n nuestras opciones disponibles." },
+              { n: "02", icon: DollarSign, title: "Env├¡a USDT", desc: "Transfiere a nuestra wallet oficial en la red TRON (TRC20) ├║nicamente." },
+              { n: "03", icon: Activity, title: "Env├¡a el TXID", desc: "El bot validar├í tu hash de transacci├│n directamente en el explorador." },
+              { n: "04", icon: ShieldCheck, title: "Verificaci├│n", desc: "El sistema valida la Red, el Monto y el Destinatario autom├íticamente." },
+              { n: "05", icon: Zap, title: "Activaci├│n", desc: "Tu inversi├│n se marca como ACTIVA al instante tras la confirmaci├│n." },
               { n: "06", icon: Clock, title: "Recibe Pagos", desc: "En 24 horas tu balance se actualiza con el capital + la ganancia." },
             ].map((s, i) => (
               <div key={i} className="card p-10 space-y-6 group bg-white/[0.02] border-white/5 hover:border-gold/20 transition-all rounded-[2rem]">
@@ -489,7 +489,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════════════════════════ FOOTER ════════════════════════ */}
+      {/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ FOOTER ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */}
       <footer className="py-20 border-t border-white/5 bg-black relative">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-20">
@@ -501,7 +501,7 @@ export default function Home() {
                 <span className="font-black text-2xl uppercase tracking-tighter">{SITE_NAME}</span>
               </Link>
               <p className="text-muted text-sm leading-relaxed">
-                La plataforma líder de inversión automatizada en USDT TRC20. Seguridad blockchain garantizada y rendimientos diarios estables.
+                La plataforma l├¡der de inversi├│n automatizada en USDT TRC20. Seguridad blockchain garantizada y rendimientos diarios estables.
               </p>
             </div>
             
@@ -527,7 +527,7 @@ export default function Home() {
 
           <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted">
-              © 2026 {SITE_NAME}. Todos los derechos reservados.
+              ┬® 2026 {SITE_NAME}. Todos los derechos reservados.
             </p>
             <div className="flex items-center gap-8">
                <span className="text-[10px] font-black uppercase tracking-widest text-profit">Red TRC20 Only</span>

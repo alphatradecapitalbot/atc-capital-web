@@ -1,0 +1,14 @@
+﻿491636f FINAL FIX - BUILD + NEW DESIGN
+7ddc886 force deploy new design
+80ee011 fix login UI + supabase config
+dff33e2 deploy pro version
+72fbf75 fix: restore plans layout
+20c3f32 final: restore premium plans UI
+5a64923 UI: Overhaul landing page with premium card-based design and live stats
+d6d68c8 fix broken plans rendering into real UI cards
+591dc45 upgrade UI to premium fintech layout
+6a747b2 fix UI rendering only
+03629e1 fix: landing page UI rendering and fallback data
+b37ca5e fix: resolve Vercel build error for /api/admin/action
+a2cd36c fix next config for vercel deployment
+98e8f06 clean fresh project
