@@ -3,14 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --background: #080808;
-  --card: #0f0f0f;
-  --card-hover: #141414;
+  --background: #0B0B0F;
+  --card: rgba(18, 18, 26, 0.5);
+  --card-hover: rgba(26, 26, 36, 0.7);
   --border: rgba(255,255,255,0.06);
-  --gold: #F5C542;
-  --gold-dim: #B8960C;
+  --gold: #FFD700;
+  --gold-dim: #D4AF37;
+  --primary: #2962FF;
+  --primary-glow: #7B5CFF;
   --profit: #00FF88;
-  --muted: #555;
+  --muted: #888899;
 }
 
 * { box-sizing: border-box; }
@@ -18,7 +20,7 @@
 body {
   background: var(--background);
   color: #fff;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Poppins', 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -119,11 +121,11 @@ body {
 
 /* Glass */
 .glass {
-  background: rgba(8, 8, 8, 0.75);
+  background: var(--card);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 215, 0, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 197, 66, 0.05);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.05);
 }
 
 /* Nav link */
